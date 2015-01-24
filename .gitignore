@@ -1,5 +1,5 @@
 # Build library folder
-dist
+/dist
 
 # Logs
 logs
