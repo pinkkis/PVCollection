@@ -20,6 +20,12 @@ var SPCollection = (function(){
 		this.template = opt.template ? this.initTemplate(opt.template) : null;
 		this.created = moment();
 
+		// status props
+		this._isSorted = true;
+		this._dirty = false;
+		this._isSaving = false;
+		this.length = function(){ return this.items.length; };
+
 		// function overwrite
 		$.extend(true, this, opt.functions);
 
@@ -38,6 +44,28 @@ var SPCollection = (function(){
 
 	// init the list, set items, events and stuff
 	Collection.prototype.initialize = function() {};
+
+	// return props
+	Collection.prototype.isDirty = function() { return this._isDirty; };
+	Collection.prototype.isSaving = function() { return this._isSaving; };
+	Collection.prototype.isSorted = function() { return this._isSorted; };
+
+	Collection.prototype.toJSON = function(stringified) {
+		var result = {
+			name: this.name,
+			id: this.id,
+			created: this.created.format(),
+			length: this.length(),
+			items : (function(items){ return items.map(function(x){ return x.toJSON(); }); })(this.items)
+		};
+
+		if (stringified) {
+			return JSON.stringify(result);
+		} else {
+			return result;
+		}
+
+	};
 
 	// get the array of items
 	Collection.prototype.get = function(index) {
@@ -167,8 +195,6 @@ var SPCollection = (function(){
 			return a[a._uniqueField] < b[b._uniqueField];
 		});
 
-		// TODO 
-		// return info on how items are sorted
 		this.trigger('sort', {});
 
 		return this;
@@ -206,6 +232,18 @@ var SPCollection = (function(){
 		return this;
 	};
 
+	// clear the whole list
+	Collection.prototype.clear = function(_options) {
+		this.log(['collection clear', _options]);
+
+		this.trigger('clear', {items: this.items.slice(0)});
+
+		// clear all items
+		this.items = [];
+
+		return this;
+	};
+
 	// render the list
 	Collection.prototype.render = function(_options) {
 		this.log(['collection render', _options]);
@@ -219,6 +257,49 @@ var SPCollection = (function(){
 		this.trigger('render', {});
 
 		return this;
+	};
+
+	// built in quick fetch, overwrite this method to change functionality
+	Collection.prototype.fetch = function(url, _options) {
+		this.log(['collection fetch', url, _options]);
+
+		var saving = $.Deferred;
+
+		// TODO
+		// use saved 
+		// create Deferred
+		// fetch data
+		// do any parsing required
+		// return array of items
+		// .set() items
+		// resolve deferred
+
+		saving.always(function(result){
+			this.trigger('save', {fetchResult: result, collectionResult: {}});
+		});
+
+		return this;
+	};
+
+	// hand the items over to a third party method that saves them and lets us know
+	Collection.prototype.save = function(_options) {
+		this.log(['collection save', _options]);
+
+		var saveObject = {
+			deferred: $.Deferred,
+			items: this.items.slice(0)
+		};
+
+		// TODO
+		// crate deferred and attach callbacks to it
+		// attach deferred and changed models to outputObect
+		// external saving call will resolve deferred once it's done
+
+		saveObject.deferred.always(function(result){
+			this.trigger('save', {saveResult: result, collectionResult: {}});
+		});
+
+		return saveObject;
 	};
 
 	// event handlers
@@ -369,6 +450,11 @@ var SPCollection = (function(){
 	// render item from template, or if item is clean, just return the already rendered html
 	Model.prototype.render = function(_options) {
 		this.log(['model render', _options]);
+
+		// if we don't have a template, return json
+		if (!this.template) {
+			return this.toJSON;
+		}
 
 		// if we either don't have it at all, or the model has changed since last render
 		if (!this._hasBeenRendered) {

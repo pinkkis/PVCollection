@@ -8,7 +8,7 @@ var List = new SPCollection({
 	debug: true,
 	functions: {
 		initialize: function(_options) {
-			this._log('collection init');
+			this.log('collection init');
 
 			// set basic events
 			this.on('sort', this.onsort);
@@ -23,7 +23,7 @@ var List = new SPCollection({
 	// model options/template
 	debug: true,
 	foo: 'bar',
-	template: JST['templates/item.hbs'],
+	template: JST['src/templates/item.hbs'],
 	functions: {
 		onchange: function(evt) {
 			// this was added in model setup
@@ -45,5 +45,20 @@ $(document).ready(function(){
 			}
 		});
 	});
+
+	// draw the first item
+	$("#draw-model").on('click', function(){
+		$("#model-wrapper").html( List.get(0).render() );
+	});
+
+	// draw JSON
+	$("#draw-list").on('click', function(){
+		$("#list-wrapper").html( List.toJSON(true) );
+	});
+
+	// draw JSON
+	$("#reset").on('click', function(){
+		List.clear();
+	});	
 
 });

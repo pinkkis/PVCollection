@@ -31,7 +31,6 @@ var List = new SPCollection({
 	template: JST['templates/item.hbs'],
 	functions: {
 		onchange: function(evt) {
-			// this was added in model setup
 			this.render();
 		}
 	}
