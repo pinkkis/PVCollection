@@ -5,37 +5,43 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>SPCollection Test</title>
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+	<style type="text/css">
+		#model-wrapper,
+		#list-wrapper {
+			min-height: 100px;
+		}
+		.controls {
+			padding-bottom: 1em;
+		}
+	</style>
 </head>
 <body>
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
-				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod mpor incididunt ut labore et dolore magna aliqua.</p>
-				<!-- <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod mpor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam uis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo nsequat. Duis aute irure dolor in reprehenderit in voluptate velit es llum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat n proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p> -->
+				<h2>SPCollection Test</h2>
+				<p>Sandbox testing for SPCollection, adding and rendering collections and their lists.</p>
 			</div>
 		</div>
-	</div>
 
-	<div class="container">
 		<div class="row">
-			<div class="col-md-6">
-				<div id="list-wrapper"></div>
-			</div>
-			<div class="col-md-6">
-				<div id="model-wrapper"></div>
-			</div>
-		</div>
-	</div>
-
-	<div class="container">
-		<div class="row">
-			<div class="col-md-12">
+			<div class="col-md-12 controls">
 				<span id="draw-list" class="btn btn-default">draw list</span>
 				<span id="draw-model" class="btn btn-default">draw model</span>
 				<span id="add-model" class="btn btn-default">add model</span>
 				<span id="reset" class="btn btn-default">reset</span>
 			</div>
 		</div>
+
+		<div class="row">
+			<div class="col-md-6 bg-info">
+				<div id="list-wrapper"></div>
+			</div>
+			<div class="col-md-6 bg-success">
+				<div id="model-wrapper"></div>
+			</div>
+		</div>
+
 	</div>
 	
 	

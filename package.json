@@ -1,6 +1,6 @@
 {
   "name": "SPCollection",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Javascript Model and Collection classes.",
   "main": "index.js",
   "scripts": {

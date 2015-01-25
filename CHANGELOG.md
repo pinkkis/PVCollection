@@ -1,3 +1,11 @@
+v0.2.2
+======
+
+* Added silent option to more events
+* Changed prototype._log to log
+* Collection.where() can now also accept a function as the first argument
+
+
 v0.2.1
 ======
 

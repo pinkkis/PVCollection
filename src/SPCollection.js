@@ -41,7 +41,7 @@ var SPCollection = (function(){
 
 	// get the array of items
 	Collection.prototype.get = function(index) {
-		this._log(['collection get', index]);
+		this.log(['collection get', index]);
 
 		if (!isNaN(index) && index > -1) {
 			return this.items[index];
@@ -52,7 +52,7 @@ var SPCollection = (function(){
 
 	// set a new array of items in to the list, and report the change
 	Collection.prototype.set = function(items, _options) {
-		this._log(['collection set', items, _options]);
+		this.log(['collection set', items, _options]);
 
 		var addedItems = [],
 			removedItems = [],
@@ -75,7 +75,9 @@ var SPCollection = (function(){
 
 	// add an array of items, with options
 	Collection.prototype.add = function(items, _options) {
-		this._log(['collection add', items, _options]);
+		this.log(['collection add', items, _options]);
+
+		_options = _options || {};
 
 		items = items || [];
 		if (!$.isArray(items)) { items = [items]; }
@@ -91,14 +93,19 @@ var SPCollection = (function(){
 			addedItems.push(newItem);
 		});
 
-		this.trigger('change', { added: addedItems.slice(0), removed: [], changed: []});
+		if (!_options.silent) {
+			this.trigger('change', { added: addedItems.slice(0), removed: [], changed: []});
+		}
 
 		return this;
 	};
 
 	// remove an item
-	Collection.prototype.remove = function(_id) {
-		this._log(['collection remove', _id]);
+	Collection.prototype.remove = function(_id, _options) {
+		this.log(['collection remove', _id, _options]);
+		
+		_options = _options || {};
+
 		var id = -1,
 			itemIndex,
 			removedModel;
@@ -121,28 +128,40 @@ var SPCollection = (function(){
 		// save the model for the event
 		removedModel = this.items.splice(itemIndex, 1);
 
-		this.trigger('change', { added: [], removed: [removedModel], changed: []});
+		if (!_options.silent) {
+			this.trigger('change', { added: [], removed: [removedModel], changed: []});
+		}
 
 		return this;
 	};
 
 	// get an array of items where attributes[key] === value.
+	// first argument can also be a function that will be used for the grep instead
 	// if internal is true, then "private" properties can be compared
 	Collection.prototype.where = function(key, value, internal) {
-		this._log(['collection where', key, value]);
+		this.log(['collection where', key, value, internal]);
 
-		return $.grep( this.items, function(item, idx) { 
-			if (internal) {
-				return item[key] === value; 
-			} else {
-				return item.attributes[key] === value; 
-			}
-		});
+		// if the first argument was a function
+		if (typeof key === "function") {
+			internal = value;
+
+			// key gets item, index passed to it
+			return $.grep( this.items, key);
+
+		} else {
+			return $.grep( this.items, function(item, idx) { 
+				if (internal) {
+					return item[key] === value; 
+				} else {
+					return item.attributes[key] === value; 
+				}
+			});
+		}
 	};
 
 	// sort the item list
 	Collection.prototype.sort = function(fn) {
-		this._log(['collection sort', fn]);
+		this.log(['collection sort', fn]);
 
 		this.items.sort(fn || function(a, b) {
 			return a[a._uniqueField] < b[b._uniqueField];
@@ -157,7 +176,7 @@ var SPCollection = (function(){
 
 	// filter the list with custom filter
 	Collection.prototype.filter = function(fn) {
-		this._log(['collection filter', fn]);
+		this.log(['collection filter', fn]);
 
 		var filteredItems = [];
 
@@ -170,14 +189,14 @@ var SPCollection = (function(){
 	// returns boolean if an item in collection matches comparator fn
 	// fn example: function(element, index, array) { return elem > 10; }
 	Collection.prototype.contains = function(fn) {
-		this._log(['collection contains', fn]);
+		this.log(['collection contains', fn]);
 
 		return this.items.some(fn);
 	};
 
 	// clear the whole list
 	Collection.prototype.clear = function(_options) {
-		this._log(['collection clear', _options]);
+		this.log(['collection clear', _options]);
 
 		this.trigger('clear', {items: this.items.slice(0)});
 
@@ -189,7 +208,7 @@ var SPCollection = (function(){
 
 	// render the list
 	Collection.prototype.render = function(_options) {
-		this._log(['collection render', _options]);
+		this.log(['collection render', _options]);
 
 		// TODO
 		// get each item's render result
@@ -204,15 +223,15 @@ var SPCollection = (function(){
 
 	// event handlers
 	Collection.prototype.onsort = function(evt) {
-		this._log(['collection sort event handler', evt]);
+		this.log(['collection sort event handler', evt]);
 	};
 
 	Collection.prototype.onchange = function(evt) {
-		this._log(['collection change event handler', evt]);
+		this.log(['collection change event handler', evt]);
 	};
 
 	Collection.prototype.onrender = function(evt) {
-		this._log(['collection render event handler', evt]);
+		this.log(['collection render event handler', evt]);
 	};
 	// -- end Collection Class
 
@@ -258,7 +277,7 @@ var SPCollection = (function(){
 	};
 
 	Model.prototype.initialize = function(_options) {
-		this._log(['model init', _options]);
+		this.log(['model init', _options]);
 
 		// render template
 		if (this.template) {
@@ -275,7 +294,7 @@ var SPCollection = (function(){
 
 	// return single value or object of values from array of keys
 	Model.prototype.get = function(key) {
-		this._log(['model get', key]);
+		this.log(['model get', key]);
 
 		if (!key) {
 			return this.getAttributes();
@@ -300,7 +319,7 @@ var SPCollection = (function(){
 	};
 
 	Model.prototype.set = function(key, value, internal, silent) {
-		this._log(['model set', key, value, internal, silent]);
+		this.log(['model set', key, value, internal, silent]);
 
 		var changedAttributes = [],
 			model = this,
@@ -349,7 +368,7 @@ var SPCollection = (function(){
 
 	// render item from template, or if item is clean, just return the already rendered html
 	Model.prototype.render = function(_options) {
-		this._log(['model render', _options]);
+		this.log(['model render', _options]);
 
 		// if we either don't have it at all, or the model has changed since last render
 		if (!this._hasBeenRendered) {
@@ -366,14 +385,14 @@ var SPCollection = (function(){
 
 	// just return all attributes
 	Model.prototype.getAttributes = function() {
-		this._log(['model getAttributes']);
+		this.log(['model getAttributes']);
 
 		return this.attributes;
 	};
 
 	// just return all attributes
 	Model.prototype.parser = function(input) {
-		this._log(['model parser'], input);
+		this.log(['model parser'], input);
 
 		var output = {};
 
@@ -387,15 +406,15 @@ var SPCollection = (function(){
 
 	// event handlers
 	Model.prototype.onchange = function(evt) {
-		this._log(['model change event handler', evt]);
+		this.log(['model change event handler', evt]);
 	};
 
 	Model.prototype.onrender = function(evt) {
-		this._log(['model render event handler', evt]);
+		this.log(['model render event handler', evt]);
 	};
 
 	Model.prototype.ondirty = function(evt) {
-		this._log(['model dirty event handler', evt]);
+		this.log(['model dirty event handler', evt]);
 
 		this._hasBeenRendered = false;
 	};
@@ -405,7 +424,7 @@ var SPCollection = (function(){
 	// Methods for both
 
 	// logger
-	Model.prototype._log = Collection.prototype._log = function(message, type) {
+	Model.prototype.log = Collection.prototype.log = function(message, type) {
 		type = type || 'log';
 
 		if (this.debug) {
@@ -428,17 +447,6 @@ var SPCollection = (function(){
 		// else return null
 		return null;
 	};
-
-	// // check what the template is and deal with it
-	// Model.prototype.extend = Collection.prototype.extend = function(_template) {
-	// 	for (key in obj) {
-	// 		if (obj.hasOwnProperty(key)) {
-	// 			// We are sure that obj[key] belongs to the object and was not inherited.
-	// 		}
-	// 	}
-
-	// 	return this;
-	// };
 
 	// event handling
 	// thanks to http://stackoverflow.com/a/9101404

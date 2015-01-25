@@ -13,7 +13,7 @@ var List = new SPCollection({
 	debug: true,
 	functions: {
 		initialize: function(_options) {
-			this._log('collection init');
+			this.log('collection init');
 
 			// set basic events
 			this.on('sort', this.onsort);
