@@ -13,8 +13,23 @@ module.exports = function(grunt) {
           "test/templates.js": "src/templates/**/*.hbs",
         },
         partialRegex: /__partial.hbs$/,
-        processName: function(file){
+        processName: function(file) {
           return file.replace(/\.hbs/, '');
+        }
+      }
+    },
+    uglify: {
+      options: {
+        banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> */',
+        mangle: {
+          except: ['$']
+        },
+        sourceMap: true,
+        sourceMapName: 'dist/<%= pkg.name %>.map'
+      },
+      my_target: {
+        files: {
+          'dist/<%= pkg.name %>.min.js': ['dist/SPCollection.js'],
         }
       }
     },
@@ -22,7 +37,13 @@ module.exports = function(grunt) {
       main: {
         files: [
           // includes files within path
-          {expand: true, src: ['src/*.js'], dest: 'dist/', filter: 'isFile', flatten: true},
+          {
+            expand: true,
+            src: ['src/*.js'],
+            dest: 'dist/',
+            filter: 'isFile',
+            flatten: true
+          },
         ],
       },
     },
@@ -47,9 +68,10 @@ module.exports = function(grunt) {
   // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-handlebars');
 
   // Default task(s).
-  grunt.registerTask('default', ['handlebars', 'copy']);
+  grunt.registerTask('default', ['handlebars', 'copy', 'uglify']);
 
 };
