@@ -14,11 +14,18 @@ v0.3.0
 ======
 
 * Collection.set() now working
-* Collection.filter() implemented
 * Collection.render() implemented
 
 
 ## Implemented
+
+v0.2.4
+======
+
+* Collection.first() and .last() added
+* Collection.filter() implemented
+* Collection.map() implemented
+
 
 v0.2.3
 ======

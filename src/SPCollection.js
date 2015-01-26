@@ -78,6 +78,20 @@ var SPCollection = (function(){
 		}
 	};
 
+	// get the array of items
+	Collection.prototype.first = function() {
+		this.log(['collection first']);
+
+		if (this.length) { return this.items[0]; } else { return null; }
+	};
+
+	// get the array of items
+	Collection.prototype.last = function() {
+		this.log(['collection last']);
+
+		if (this.length) { return this.items[this.length -1]; } else { return null; }
+	};
+
 	// set a new array of items in to the list, and report the change
 	Collection.prototype.set = function(items, _options) {
 		this.log(['collection set', items, _options]);
@@ -188,28 +202,47 @@ var SPCollection = (function(){
 	};
 
 	// sort the item list
-	Collection.prototype.sort = function(fn) {
-		this.log(['collection sort', fn]);
+	Collection.prototype.sort = function(_options, fn) {
+		this.log(['collection sort', _options, fn]);
+
+		if (typeof _options === "function") {
+			fn = _options;
+			_options = {};
+		}
 
 		this.items.sort(fn || function(a, b) {
 			return a[a._uniqueField] < b[b._uniqueField];
 		});
 
-		this.trigger('sort', {});
+		if (!_options.silent) {
+			this.trigger('sort', {});
+		}
 
 		return this;
 	};
 
 	// filter the list with custom filter
+	// fn is function(item, index, array)
 	Collection.prototype.filter = function(fn) {
 		this.log(['collection filter', fn]);
 
-		var filteredItems = [];
+		if (typeof fn !== "function") {
+			throw new Error("Argument must be a function");
+		}
 
-		// TODO
-		// filter items
+		return this.items.filter(fn);
+	};
 
-		return filteredItems;
+	// run Array.map on the items array
+	// fn is function(item)
+	Collection.prototype.map = function(fn) {
+		this.log(['collection map', fn]);
+
+		if (typeof fn !== "function") {
+			throw new Error("Argument must be a function");
+		}
+
+		return this.items.map(fn);
 	};
 
 	// returns boolean if an item in collection matches comparator fn
