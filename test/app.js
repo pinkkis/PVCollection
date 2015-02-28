@@ -7,7 +7,7 @@ var List = new PVCollection({
 	debug: true,
 	functions: {
 		initialize: function(_options) {
-			this.log('user init init');
+			this.log(['user init init'], 'info');
 		}
 	}
 }, {
@@ -28,6 +28,7 @@ $(document).ready(function(){
 	// bind buttons
 	$("#add-model").on('click', function(){
 		List.add({
+			id: Math.floor(Math.random() * 9999),
 			foo: 'bar',
 			bar: Math.random(),
 			title: 'Random thing ' + Math.floor(Math.random() * 100),
@@ -35,6 +36,22 @@ $(document).ready(function(){
 				thing: 'stuff'
 			}
 		});
+	});
+
+	$("#set-list").on('click', function(){
+		var items = [{
+			id: Math.floor(Math.random() * 9999),
+			foo: 'bar',
+			bar: Math.random(),
+			title: 'Random thing ' + Math.floor(Math.random() * 100),
+			baz: {
+				thing: 'stuff'
+			}
+		}];
+
+		items.push( List.get( Math.floor(Math.random() * List.length) ).get() );
+
+		List.set(items);
 	});
 
 	// draw the first item

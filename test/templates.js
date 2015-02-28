@@ -6,7 +6,9 @@ this["JST"]["test/templates/item.hbs"] = Handlebars.template({"compiler":[6,">= 
     + escapeExpression(((helper = (helper = helpers.guid || (depth0 != null ? depth0.guid : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"guid","hash":{},"data":data}) : helper)))
     + "\">\r\n	<h3>title: "
     + escapeExpression(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"title","hash":{},"data":data}) : helper)))
-    + "</h3>\r\n	<ul>\r\n		<li>foo: "
+    + "</h3>\r\n	<ul>\r\n		<li>Id: "
+    + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
+    + "</li>\r\n		<li>foo: "
     + escapeExpression(((helper = (helper = helpers.foo || (depth0 != null ? depth0.foo : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"foo","hash":{},"data":data}) : helper)))
     + "</li>\r\n		<li>bar: "
     + escapeExpression(((helper = (helper = helpers.bar || (depth0 != null ? depth0.bar : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"bar","hash":{},"data":data}) : helper)))
