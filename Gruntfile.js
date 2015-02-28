@@ -10,7 +10,7 @@ module.exports = function(grunt) {
           namespace: "JST"
         },
         files: {
-          "test/templates.js": "src/templates/**/*.hbs",
+          "test/templates.js": "test/templates/**/*.hbs",
         },
         partialRegex: /__partial.hbs$/,
         processName: function(file) {
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
       },
       my_target: {
         files: {
-          'dist/<%= pkg.name %>.min.js': ['dist/SPCollection.js'],
+          'dist/<%= pkg.name %>.min.js': ['dist/PVCollection.js'],
         }
       }
     },
@@ -56,7 +56,7 @@ module.exports = function(grunt) {
         },
       },
       templates: {
-        files: ['src/templates/**/*.hbs'],
+        files: ['test/templates/**/*.hbs'],
         tasks: ['handlebars', 'copy'],
         options: {
           spawn: false,
@@ -70,6 +70,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-handlebars');
+
+  grunt.loadNpmTasks('grunt-jsdoc');
 
   // Default task(s).
   grunt.registerTask('default', ['handlebars', 'copy', 'uglify']);

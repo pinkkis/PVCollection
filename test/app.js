@@ -1,29 +1,20 @@
 /* jshint jquery:true, browser:true, eqeqeq:false, undef:true, unused:false, quotmark:false, expr:true  */
-/* globals Handlebars, JST, SPCollection */
-'use strict';
+/* globals Handlebars, JST, PVCollection */
 
-var List = new SPCollection({
+var List = new PVCollection({
 	// collection options
 	name: 'Test list',
 	debug: true,
 	functions: {
 		initialize: function(_options) {
-			this.log('collection init');
-
-			// set basic events
-			this.on('sort', this.onsort);
-			this.on('render', this.onrender);
-			this.on('change', this.onchange);
-
-			this.initialized = true;
-			this.trigger('initialized', {});
+			this.log('user init init');
 		}
 	}
 }, {
 	// model options/template
 	debug: true,
 	foo: 'bar',
-	template: JST['src/templates/item.hbs'],
+	template: JST['test/templates/item.hbs'],
 	functions: {
 		onchange: function(evt) {
 			// this was added in model setup

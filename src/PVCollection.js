@@ -1,9 +1,8 @@
 /* jshint jquery:true, browser:true, eqeqeq:false, undef:true, unused:false, quotmark:false, expr:true, devel:true */
 /* globals Handlebars, JST, moment */
-/* exported SPCollection */
-'use strict';
+/* exported PVCollection */
 
-var SPCollection = (function(){
+var PVCollection = (function(){
 
 	// Collection Class
 	// ----------------
@@ -39,7 +38,23 @@ var SPCollection = (function(){
 		this._events = {};
 
 		// do anything that needs to get initialized
-		this.initialize.apply(this, this.options);
+		this._initialize.apply(this, this.options);
+	};
+
+	// initialize is for user content, set some basic stuff first
+	Collection.prototype._initialize = function(){
+			this.log('collection "'+ this.name +'" init');
+
+			// set basic events
+			this.on('sort', this.onsort);
+			this.on('render', this.onrender);
+			this.on('change', this.onchange);
+
+			// call user init function here
+			this.initialize.apply(this, this.options);		
+
+			this.initialized = true;
+			this.trigger('initialized', {});
 	};
 
 	// init the list, set items, events and stuff
@@ -93,18 +108,33 @@ var SPCollection = (function(){
 	};
 
 	// set a new array of items in to the list, and report the change
-	Collection.prototype.set = function(items, _options) {
-		this.log(['collection set', items, _options]);
+	Collection.prototype.set = function(items, options) {
+		this.log(['collection set', items, options]);
 
 		var addedItems = [],
 			removedItems = [],
-			changedItems = [];
+			changedItems = [],
+			oldItems = this.items.slice(0);
 
 		// TODO
 		// compare new items and their _uniqueField to existing items
 		// remove items from current list that are not in the new list
 		// add items from the new list that are not in the current list
 		// update items that exist in both
+
+
+		// 
+
+
+
+
+
+
+
+
+
+
+
 
 		this.trigger('change', { 
 			added: addedItems,
@@ -116,10 +146,10 @@ var SPCollection = (function(){
 	};
 
 	// add an array of items, with options
-	Collection.prototype.add = function(items, _options) {
-		this.log(['collection add', items, _options]);
+	Collection.prototype.add = function(items, options) {
+		this.log(['collection add', items, options]);
 
-		_options = _options || {};
+		options = options || {};
 
 		items = items || [];
 		if (!$.isArray(items)) { items = [items]; }
@@ -128,14 +158,14 @@ var SPCollection = (function(){
 			addedItems = [];
 
 		items.forEach(function(itemData, idx, arr){
-			var newModel = $.extend(true, {}, collection.model, {collection: collection}, _options);
+			var newModel = $.extend(true, {}, collection.model, {collection: collection}, options);
 			var newItem = new Model( newModel, itemData );
 
 			collection.items.push( newItem );
 			addedItems.push(newItem);
 		});
 
-		if (!_options.silent) {
+		if (!options.silent) {
 			this.trigger('change', { added: addedItems.slice(0), removed: [], changed: []});
 		}
 
@@ -143,10 +173,10 @@ var SPCollection = (function(){
 	};
 
 	// remove an item
-	Collection.prototype.remove = function(_id, _options) {
-		this.log(['collection remove', _id, _options]);
+	Collection.prototype.remove = function(_id, options) {
+		this.log(['collection remove', _id, options]);
 		
-		_options = _options || {};
+		options = options || {};
 
 		var id = -1,
 			itemIndex,
@@ -170,7 +200,7 @@ var SPCollection = (function(){
 		// save the model for the event
 		removedModel = this.items.splice(itemIndex, 1);
 
-		if (!_options.silent) {
+		if (!options.silent) {
 			this.trigger('change', { added: [], removed: [removedModel], changed: []});
 		}
 
@@ -202,19 +232,19 @@ var SPCollection = (function(){
 	};
 
 	// sort the item list
-	Collection.prototype.sort = function(_options, fn) {
-		this.log(['collection sort', _options, fn]);
+	Collection.prototype.sort = function(options, fn) {
+		this.log(['collection sort', options, fn]);
 
-		if (typeof _options === "function") {
-			fn = _options;
-			_options = {};
+		if (typeof options === "function") {
+			fn = options;
+			options = {};
 		}
 
 		this.items.sort(fn || function(a, b) {
 			return a[a._uniqueField] < b[b._uniqueField];
 		});
 
-		if (!_options.silent) {
+		if (!options.silent) {
 			this.trigger('sort', {});
 		}
 
@@ -254,8 +284,8 @@ var SPCollection = (function(){
 	};
 
 	// clear the whole list
-	Collection.prototype.clear = function(_options) {
-		this.log(['collection clear', _options]);
+	Collection.prototype.clear = function(options) {
+		this.log(['collection clear', options]);
 
 		this.trigger('clear', {items: this.items.slice(0)});
 
@@ -266,8 +296,8 @@ var SPCollection = (function(){
 	};
 
 	// clear the whole list
-	Collection.prototype.clear = function(_options) {
-		this.log(['collection clear', _options]);
+	Collection.prototype.clear = function(options) {
+		this.log(['collection clear', options]);
 
 		this.trigger('clear', {items: this.items.slice(0)});
 
@@ -278,8 +308,8 @@ var SPCollection = (function(){
 	};
 
 	// render the list
-	Collection.prototype.render = function(_options) {
-		this.log(['collection render', _options]);
+	Collection.prototype.render = function(options) {
+		this.log(['collection render', options]);
 
 		// TODO
 		// get each item's render result
@@ -293,8 +323,8 @@ var SPCollection = (function(){
 	};
 
 	// built in quick fetch, overwrite this method to change functionality
-	Collection.prototype.fetch = function(url, _options) {
-		this.log(['collection fetch', url, _options]);
+	Collection.prototype.fetch = function(url, options) {
+		this.log(['collection fetch', url, options]);
 
 		var saving = $.Deferred;
 
@@ -308,15 +338,15 @@ var SPCollection = (function(){
 		// resolve deferred
 
 		saving.always(function(result){
-			this.trigger('save', {fetchResult: result, collectionResult: {}});
+			this.trigger('save', { fetchResult: result, collectionResult: {} });
 		});
 
 		return this;
 	};
 
 	// hand the items over to a third party method that saves them and lets us know
-	Collection.prototype.save = function(_options) {
-		this.log(['collection save', _options]);
+	Collection.prototype.save = function(options) {
+		this.log(['collection save', options]);
 
 		var saveObject = {
 			deferred: $.Deferred,
@@ -329,7 +359,7 @@ var SPCollection = (function(){
 		// external saving call will resolve deferred once it's done
 
 		saveObject.deferred.always(function(result){
-			this.trigger('save', {saveResult: result, collectionResult: {}});
+			this.trigger('save', { saveResult: result, collectionResult: {} });
 		});
 
 		return saveObject;
@@ -390,8 +420,8 @@ var SPCollection = (function(){
 		this.initialize.apply(this, this.options);
 	};
 
-	Model.prototype.initialize = function(_options) {
-		this.log(['model init', _options]);
+	Model.prototype.initialize = function(options) {
+		this.log(['model init', options]);
 
 		// render template
 		if (this.template) {
@@ -441,8 +471,8 @@ var SPCollection = (function(){
 
 		// if the key is an object, we shift the arguments, as we don't have a value
 		if (typeof key === "object") {
-			internal = value;
 			silent = internal;
+			internal = value;
 			value = null;
 
 			if (internal) {
@@ -453,9 +483,11 @@ var SPCollection = (function(){
 
 			// push items into the array
 			for (var k in key) {
-				change = {};
-				change[k] = key[k];
-				changedAttributes.push(change);
+				if (key.hasOwnProperty(k)) {
+					change = {};
+					change[k] = key[k];
+					changedAttributes.push(change);
+				}
 			}
 
 		} else {
@@ -481,8 +513,8 @@ var SPCollection = (function(){
 	};
 
 	// render item from template, or if item is clean, just return the already rendered html
-	Model.prototype.render = function(_options) {
-		this.log(['model render', _options]);
+	Model.prototype.render = function(options) {
+		this.log(['model render', options]);
 
 		// if we don't have a template, return json
 		if (!this.template) {

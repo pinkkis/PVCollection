@@ -1,6 +1,6 @@
 this["JST"] = this["JST"] || {};
 
-this["JST"]["src/templates/item.hbs"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+this["JST"]["test/templates/item.hbs"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
   var stack1, helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, lambda=this.lambda;
   return "<div class=\"item\" data-uuid=\""
     + escapeExpression(((helper = (helper = helpers.guid || (depth0 != null ? depth0.guid : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"guid","hash":{},"data":data}) : helper)))
