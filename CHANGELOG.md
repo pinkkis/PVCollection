@@ -10,14 +10,19 @@ v0.4.0
 	* Collection creates a deferred
 	* Once deferred is resolved, the Collection receives a new array and uses .set() 
 
+## Implemented
+
 v0.3.0
 ======
 
 * Collection.set() now working
+* Model.set() now adds changed attributes to this.changedAttributes to get them later and outside of the event
+	* Now uses deep property comparison to figure out what changed
+	* If nothing changed, item is not listed in changedItems
+* Model.clean() clears _dirty and empties changedAttributes
 * Collection.render() implemented
-
-
-## Implemented
+	* Only basic support in place. Model.render() is called. Need to add hooks to allow rendering be customized
+	* this._hasBeenRendered is set to false on change and sort events, so that new models get rendered
 
 v0.2.4
 ======

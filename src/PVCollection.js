@@ -16,8 +16,12 @@ var PVCollection = (function(){
 		this.options = opt;
 		this.debug = opt.debug || false;
 		this.initialized = false;
-		this.template = opt.template ? this.initTemplate(opt.template) : null;
 		this.created = moment();
+
+		// template
+		this.template = opt.template ? this.initTemplate(opt.template) : null;
+		this._hasBeenRendered = false;
+		this.templateRender = null;
 
 		// status props
 		this._isSorted = true;
@@ -42,7 +46,7 @@ var PVCollection = (function(){
 	};
 
 	// initialize is for user content, set some basic stuff first
-	Collection.prototype._initialize = function(){
+	Collection.prototype._initialize = function(options) {
 			this.log(['collection init', this.name]);
 
 			// set basic events
@@ -54,7 +58,7 @@ var PVCollection = (function(){
 			this.initialize.apply(this, this.options);		
 
 			this.initialized = true;
-			this.trigger('initialized', {});
+			this.trigger('initialized', {options: options});
 	};
 
 	// init the list, set items, events and stuff
@@ -80,10 +84,16 @@ var PVCollection = (function(){
 		} else {
 			return result;
 		}
-
 	};
 
 	// get the array of items
+	Collection.prototype.clean = function() {
+		this.log(['collection clean']);
+
+		this._dirty = false;
+	};
+
+	// get an item with index or the array of items
 	Collection.prototype.get = function(index) {
 		this.log(['collection get', index]);
 
@@ -110,7 +120,7 @@ var PVCollection = (function(){
 
 	// set a new array of items in to the list, and report the change
 	Collection.prototype.set = function(items, options) {
-		this.log(['collection set', items, options]);
+		options = options || {};
 
 		var self = this,
 			addedItems = [],
@@ -118,6 +128,11 @@ var PVCollection = (function(){
 			changedItems = [],
 			toBeRemoved = [],
 			toBeChanged = [];
+
+		this.log(['collection set', items, options]);
+
+		// list is not sorted
+		this._isSorted = false;
 
 		// find items that change or get removed
 		this.items.forEach(function(oldItem, idx, arr) {
@@ -145,10 +160,13 @@ var PVCollection = (function(){
 		toBeChanged.forEach(function(oldItem, idx, arr){
 			// TODO - provide the attributes that changed as well
 			var newIdx = items.indexOf(oldItem.attributes[oldItem._uniqueField]),
-				newItem = items.splice(newIdx, 1);
+				newItem = items.splice(newIdx, 1)[0];
 
-			oldItem.set(newItem, false, true);
-			changedItems.push( $.extend(true, {}, oldItem) );
+			var changedItem = oldItem.set(newItem, false, true);
+
+			if ( Object.keys(changedItem.changedAttributes).length ){
+				changedItems.push( oldItem );
+			}
 		});
 
 		// new we only have remaining new items in the items list
@@ -162,11 +180,13 @@ var PVCollection = (function(){
 		// set length
 		this.length = this.items.length;
 
-		this.trigger('change', { 
-			added: addedItems,
-			removed: removedItems,
-			changed: changedItems
-		});
+		if (!options.silent) {
+			this.trigger('change', { 
+				added: addedItems,
+				removed: removedItems,
+				changed: changedItems
+			});
+		}
 
 		return this;
 	};
@@ -191,12 +211,12 @@ var PVCollection = (function(){
 			addedItems.push(newItem);
 		});
 
+		// set length
+		this.length = this.items.length;
+
 		if (!options.silent) {
 			this.trigger('change', { added: addedItems.slice(0), removed: [], changed: []});
 		}
-
-		// set length
-		this.length = this.items.length;
 
 		return this;
 	};
@@ -229,12 +249,12 @@ var PVCollection = (function(){
 		// save the model for the event
 		removedModel = this.items.splice(itemIndex, 1);
 
+		// set length
+		this.length = this.items.length;
+
 		if (!options.silent) {
 			this.trigger('change', { added: [], removed: [removedModel], changed: []});
 		}
-
-		// set length
-		this.length = this.items.length;
 
 		if (options.returnItem) {
 			return removedModel;
@@ -284,6 +304,8 @@ var PVCollection = (function(){
 			this.trigger('sort', {});
 		}
 
+		this._isSorted = true;
+
 		return this;
 	};
 
@@ -328,24 +350,43 @@ var PVCollection = (function(){
 		// clear all items
 		this.items = [];
 
-		this.length = 0;
-
 		return this;
 	};
 
 	// render the list
 	Collection.prototype.render = function(options) {
+		options = options || {};
+
+		var listItems = [];
+
 		this.log(['collection render', options]);
 
 		// TODO
-		// get each item's render result
 		// create hooks for rendering to modify result
-		// output html
 		// add $el?
 
-		this.trigger('render', {});
+		// if we don't have a template, return json
+		if (!this.template) {
+			return this.toJSON();
+		}
 
-		return this;
+		// if we either don't have it at all, or the model has changed since last render
+		if (!this._hasBeenRendered) {
+
+			this.templateRender = this.template( {
+					id: this.id,
+					name: this.name,
+					created: this.created.format(),
+					items: this.map(function(item){ return item.render(); })
+				});
+
+			this._hasBeenRendered = true;
+		}
+
+		// trigger event
+		this.trigger('render', {options: options});
+
+		return this.templateRender;
 	};
 
 	// built in quick fetch, overwrite this method to change functionality
@@ -393,15 +434,26 @@ var PVCollection = (function(){
 
 	// event handlers
 	Collection.prototype.onsort = function(evt) {
-		// this.log(['collection sort event handler', evt]);
+		this.log(['collection sort event handler', evt]);
+
+		this._hasBeenRendered = false;
+	};
+
+	Collection.prototype.onclear = function(evt) {
+		this.log(['collection clear event handler', evt]);
+
+		this._hasBeenRendered = false;
+		this.length = 0;
 	};
 
 	Collection.prototype.onchange = function(evt) {
 		this.log(['collection change event handler', evt]);
+
+		this._hasBeenRendered = false;
 	};
 
 	Collection.prototype.onrender = function(evt) {
-		// this.log(['collection render event handler', evt]);
+		this.log(['collection render event handler', evt]);
 	};
 	// -- end Collection Class
 
@@ -416,12 +468,18 @@ var PVCollection = (function(){
 		this.uid = guid();
 		this.options = opt;
 		this.debug = opt.debug || false;
-		this._dirty = true;
+		this._dirty = false;
+
+		// tracks changed attributes
+		this.changedAttributes = {};
+
 		// this._synced = true;
 		// this.validate = false;
+
 		this.collection = opt.collection || null;
 		this._uniqueField = 'id';
 		this.created = moment();
+		this.modified = moment();
 
 		// merge functions into this class
 		$.extend(true, this, opt.functions);
@@ -462,6 +520,12 @@ var PVCollection = (function(){
 
 	};
 
+	// mark model as clean
+	Model.prototype.clean = function (opt) {
+		this.changedAttributes = {};
+		this._dirty = false;
+	};
+
 	// return single value or object of values from array of keys
 	Model.prototype.get = function(key) {
 		this.log(['model get', key]);
@@ -493,7 +557,7 @@ var PVCollection = (function(){
 
 		var changedAttributes = [],
 			model = this,
-			change = {};
+			localProp = null;
 
 		// if the key is an object, we shift the arguments, as we don't have a value
 		if (typeof key === "object") {
@@ -507,12 +571,15 @@ var PVCollection = (function(){
 				model.attributes = $.extend(true, {}, model.attributes, key);
 			}
 
-			// push items into the array
+			// add the changed attributes into the model for tracking
 			for (var k in key) {
 				if (key.hasOwnProperty(k)) {
-					change = {};
-					change[k] = key[k];
-					changedAttributes.push(change);
+					localProp = internal ? this[k] : this.attributes[k];
+
+					if ( !isEqual(localProp, key[k]) ) {
+						this.changedAttributes[k] = key[k];
+						localProp = null;
+					}
 				}
 			}
 
@@ -523,12 +590,16 @@ var PVCollection = (function(){
 				model.attributes[key] = value;
 			}
 
-			change[key] = value;
-			changedAttributes.push(change);
+			this.changedAttributes[key] = value;
+		}
+
+		// check if anything actually changed and change timestamp
+		if (Object.keys(this.changedAttributes).length) {
+			this.modified = moment();
 		}
 
 		if (!silent) {
-			this.trigger('change', {changed: changedAttributes });
+			this.trigger('change', { changed: changedAttributes, timestamp: this.modified });
 		}
 
 		// set to dirty
@@ -540,11 +611,11 @@ var PVCollection = (function(){
 
 	// render item from template, or if item is clean, just return the already rendered html
 	Model.prototype.render = function(options) {
-		// this.log(['model render', options]);
+		this.log(['model render', options]);
 
 		// if we don't have a template, return json
 		if (!this.template) {
-			return this.toJSON;
+			return this.toJSON();
 		}
 
 		// if we either don't have it at all, or the model has changed since last render
@@ -555,7 +626,7 @@ var PVCollection = (function(){
 		}
 
 		// trigger event
-		this.trigger('render', {});
+		this.trigger('render', {options: options});
 
 		return this.templateRender;
 	};
@@ -583,15 +654,15 @@ var PVCollection = (function(){
 
 	// event handlers
 	Model.prototype.onchange = function(evt) {
-		// this.log(['model change event handler', evt]);
+		this.log(['model change event handler', evt]);
 	};
 
 	Model.prototype.onrender = function(evt) {
-		// this.log(['model render event handler', evt]);
+		this.log(['model render event handler', evt]);
 	};
 
 	Model.prototype.ondirty = function(evt) {
-		// this.log(['model dirty event handler', evt]);
+		this.log(['model dirty event handler', evt]);
 
 		this._hasBeenRendered = false;
 	};
@@ -664,8 +735,113 @@ var PVCollection = (function(){
 		};
 	})();
 
+	// deep object comparison based on underscore
+	// https://github.com/jashkenas/underscore
 
+	// compare values
+	var isEqual = function(a, b) {
+		return eq(a,b);
+	};
+
+	// Internal recursive comparison function for 'isEqual'.
+	var eq = function(a, b, aStack, bStack) {
+		/* jshint ignore:start */
+		// Identical objects are equal. `0 === -0`, but they aren't identical.
+		// See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
+		if (a === b) return a !== 0 || 1 / a === 1 / b;
+		// A strict comparison is necessary because `null == undefined`.
+		if (a == null || b == null) return a === b;
+
+		// Compare `[[Class]]` names.
+		var className = toString.call(a);
+		if (className !== toString.call(b)) return false;
+		switch (className) {
+			// Strings, numbers, regular expressions, dates, and booleans are compared by value.
+			case '[object RegExp]':
+				// RegExps are coerced to strings for comparison (Note: '' + /a/i === '/a/i')
+			case '[object String]':
+				// Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
+				// equivalent to `new String("5")`.
+				return '' + a === '' + b;
+			case '[object Number]':
+				// `NaN`s are equivalent, but non-reflexive.
+				// Object(NaN) is equivalent to NaN
+				if (+a !== +a) return +b !== +b;
+				// An `egal` comparison is performed for other numeric values.
+				return +a === 0 ? 1 / +a === 1 / b : +a === +b;
+			case '[object Date]':
+			case '[object Boolean]':
+				// Coerce dates and booleans to numeric primitive values. Dates are compared by their
+				// millisecond representations. Note that invalid dates with millisecond representations
+				// of `NaN` are not equivalent.
+				return +a === +b;
+		}
+
+		var areArrays = className === '[object Array]';
+		if (!areArrays) {
+			if (typeof a != 'object' || typeof b != 'object') return false;
+
+			// Objects with different constructors are not equivalent, but `Object`s or `Array`s
+			// from different frames are.
+			var aCtor = a.constructor,
+				bCtor = b.constructor;
+			if (aCtor !== bCtor && !( $.isFunction(aCtor) && aCtor instanceof aCtor &&
+					$.isFunction(bCtor) && bCtor instanceof bCtor) && ('constructor' in a && 'constructor' in b)) {
+				return false;
+			}
+		}
+		// Assume equality for cyclic structures. The algorithm for detecting cyclic
+		// structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
+
+		// Initializing stack of traversed objects.
+		// It's done here since we only need them for objects and arrays comparison.
+		aStack = aStack || [];
+		bStack = bStack || [];
+		var length = aStack.length;
+		while (length--) {
+			// Linear search. Performance is inversely proportional to the number of
+			// unique nested structures.
+			if (aStack[length] === a) return bStack[length] === b;
+		}
+
+		// Add the first object to the stack of traversed objects.
+		aStack.push(a);
+		bStack.push(b);
+
+		// Recursively compare objects and arrays.
+		if (areArrays) {
+			// Compare array lengths to determine if a deep comparison is necessary.
+			length = a.length;
+			if (length !== b.length) return false;
+			// Deep compare the contents, ignoring non-numeric properties.
+			while (length--) {
+				if (!eq(a[length], b[length], aStack, bStack)) return false;
+			}
+		} else {
+			// Deep compare objects.
+			var keys = Object.keys(a),
+				key;
+			length = keys.length;
+			// Ensure that both objects contain the same number of properties before comparing deep equality.
+			if ( Object.keys(b).length !== length) return false;
+			while (length--) {
+				// Deep compare each member
+				key = keys[length];
+				if (!( (function(obj, key) { return obj != null && hasOwnProperty.call(obj, key); })(b, key) && 
+						eq(a[key], b[key], aStack, bStack))) { 
+					return false; 
+				}
+			}
+		}
+		// Remove the first object from the stack of traversed objects.
+		aStack.pop();
+		bStack.pop();
+
+		/* jshint ignore:end */
+		return true;
+	};
+
+	// return
 	return Collection;
 
 })();
-

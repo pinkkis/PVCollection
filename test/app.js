@@ -5,6 +5,7 @@ var List = new PVCollection({
 	// collection options
 	name: 'Test list',
 	debug: true,
+	template: JST['test/templates/collection.hbs'],
 	functions: {
 		initialize: function(_options) {
 			this.log(['user init init'], 'info');
@@ -56,11 +57,16 @@ $(document).ready(function(){
 
 	// draw the first item
 	$("#draw-model").on('click', function(){
-		$("#model-wrapper").html( List.get(0).render() );
+		$("#model-wrapper").html( List.get( Math.floor(Math.random() * List.length) ).render() );
 	});
 
-	// draw JSON
+	// render json
 	$("#draw-list").on('click', function(){
+		$("#list-wrapper").html( List.render({}) );
+	});
+
+	// list JSON
+	$("#draw-list-json").on('click', function(){
 		$("#list-wrapper").html( List.toJSON(true) );
 	});
 

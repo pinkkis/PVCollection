@@ -1,6 +1,6 @@
 {
   "name": "PVCollection",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Javascript Model and Collection classes.",
   "main": "dist/PVCollection.js",
   "scripts": {
@@ -8,7 +8,10 @@
     "prepublish": "grunt default"
   },
   "author": "@pinkkis",
-  "repository": "https://github.com/pinkkis/PVCollection.git",
+  "repository": {
+    "type" : "git",
+    "url": "https://github.com/pinkkis/PVCollection.git"
+  },
   "license": "MIT",
   "devDependencies": {
     "grunt": "^0.4.5",

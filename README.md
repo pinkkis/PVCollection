@@ -11,9 +11,10 @@ var List = new PVCollection({
 	// collection options
 	name: 'Test list',
 	debug: true,
+	template: JST['test/templates/collection.hbs'],
 	functions: {
 		initialize: function(_options) {
-			this.log('collection user init');
+			this.log(['user init init'], 'info');
 		}
 	}
 }, {
@@ -23,6 +24,7 @@ var List = new PVCollection({
 	template: JST['test/templates/item.hbs'],
 	functions: {
 		onchange: function(evt) {
+			// this was added in model setup
 			this.render();
 		}
 	}
