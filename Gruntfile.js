@@ -10,7 +10,7 @@ module.exports = function(grunt) {
           namespace: "JST"
         },
         files: {
-          "test/templates.js": "test/templates/**/*.hbs",
+          "examples/templates.js": "examples/templates/**/*.hbs",
         },
         partialRegex: /__partial.hbs$/,
         processName: function(file) {
@@ -56,7 +56,7 @@ module.exports = function(grunt) {
         },
       },
       templates: {
-        files: ['test/templates/**/*.hbs'],
+        files: ['examples/templates/**/*.hbs'],
         tasks: ['handlebars', 'copy'],
         options: {
           spawn: false,

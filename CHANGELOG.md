@@ -8,9 +8,18 @@ v0.4.0
 	* Uses deferreds
 * Basic Collection.save() implemented
 	* Collection creates a deferred
-	* Once deferred is resolved, the Collection receives a new array and uses .set() 
+	* Once deferred is resolved, the Collection receives a new array and uses .set() - if there's no return value, just clear dirty and changedAttributes
 
 ## Implemented
+
+v0.3.1
+======
+
+* Renamed test folder to examples, as it's not for unit test or anything
+* Added and tweaked examples
+* Added an incremental id counter to models
+* If on creation, a model is missing a value in the _uniqueField specified property, or it's falsy, add a unique id into it
+* Renamed event handler functions to camelcase
 
 v0.3.0
 ======

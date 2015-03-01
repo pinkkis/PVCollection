@@ -23,7 +23,7 @@ var List = new PVCollection({
 	foo: 'bar',
 	template: JST['test/templates/item.hbs'],
 	functions: {
-		onchange: function(evt) {
+		onChange: function(evt) {
 			// this was added in model setup
 			this.render();
 		}
