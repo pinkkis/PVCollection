@@ -20,6 +20,7 @@ v0.3.1
 * Added an incremental id counter to models
 * If on creation, a model is missing a value in the _uniqueField specified property, or it's falsy, add a unique id into it
 * Renamed event handler functions to camelcase
+* Added very basic collection fetch and save, that depend on external resolving of their deferreds
 
 v0.3.0
 ======
