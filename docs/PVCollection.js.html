@@ -82,6 +82,40 @@
               </li>
               <li><a href="#_initialize"><i class="alert alert-info"></i><span>_initialize</span></a>
               </li>
+              <li><a href="#initialize"><i class="alert alert-info"></i><span>initialize</span></a>
+              </li>
+              <li><a href="#isDirty"><i class="alert alert-info"></i><span>isDirty</span></a>
+              </li>
+              <li><a href="#isSaving"><i class="alert alert-info"></i><span>isSaving</span></a>
+              </li>
+              <li><a href="#isSorted"><i class="alert alert-info"></i><span>isSorted</span></a>
+              </li>
+              <li><a href="#toJSON"><i class="alert alert-info"></i><span>toJSON</span></a>
+              </li>
+              <li><a href="#onSort"><i class="alert alert-info"></i><span>onSort</span></a>
+              </li>
+              <li><a href="#onClear"><i class="alert alert-info"></i><span>onClear</span></a>
+              </li>
+              <li><a href="#onChange"><i class="alert alert-info"></i><span>onChange</span></a>
+              </li>
+              <li><a href="#onRender"><i class="alert alert-info"></i><span>onRender</span></a>
+              </li>
+              <li><a href="#onBeforeRender"><i class="alert alert-info"></i><span>onBeforeRender</span></a>
+              </li>
+              <li><a href="#Model"><i class="alert alert-success"></i><span>Model</span></a>
+              </li>
+              <li><a href="#render"><i class="alert alert-info"></i><span>render</span></a>
+              </li>
+              <li><a href="#getAttributes"><i class="alert alert-info"></i><span>getAttributes</span></a>
+              </li>
+              <li><a href="#parser"><i class="alert alert-info"></i><span>parser</span></a>
+              </li>
+              <li><a href="#toJSON"><i class="alert alert-info"></i><span>toJSON</span></a>
+              </li>
+              <li><a href="#onChange"><i class="alert alert-info"></i><span>onChange</span></a>
+              </li>
+              <li><a href="#onRender"><i class="alert alert-info"></i><span>onRender</span></a>
+              </li>
             </ul>
           </div>
         </div>
@@ -166,9 +200,7 @@
 
 	// do anything that needs to get initialized
 	this._initialize.apply(this, this.options);
-};
-
-// initialize is for user content, set some basic stuff first</code></pre>
+};</code></pre>
           <section id="_initialize">
             <h1>_initialize</h1>
             <h5 class="subheader"></h5>
@@ -192,7 +224,7 @@
               </tr>
             </tbody>
           </table>
-          <div class="description"><p>Internal Initialization method</p> </div>
+          <div class="description"><p>Internal Initialization method<br />initialize is for user content, set some basic stuff first</p> </div>
           <pre><code class="language-javascript">Collection.prototype._initialize = function(options) {
 	this.log(['collection init', this.name]);
 
@@ -213,24 +245,79 @@
 	this.trigger('initialized', {
 		options: options
 	});
-};
-
-// init the list, set items, events and stuff
-Collection.prototype.initialize = function() {};
-
-// return props
-Collection.prototype.isDirty = function() {
+};</code></pre>
+          <section id="initialize">
+            <h1>initialize</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.initialize()</span>
+            </p>
+          </section>
+          <div class="description"><p>Initialization method<br />User overridable init method.</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.initialize = function() {};</code></pre>
+          <section id="isDirty">
+            <h1>isDirty</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.isDirty()</span> -><span>bool</span>
+            </p>
+          </section>
+          <div class="description"><p>isDirty</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.isDirty = function() {
 	return this._isDirty;
-};
-Collection.prototype.isSaving = function() {
+};</code></pre>
+          <section id="isSaving">
+            <h1>isSaving</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.isSaving()</span> -><span>bool</span>
+            </p>
+          </section>
+          <div class="description"><p>isSaving</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.isSaving = function() {
 	return this._isSaving;
-};
-Collection.prototype.isSorted = function() {
+};</code></pre>
+          <section id="isSorted">
+            <h1>isSorted</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.isSorted()</span> -><span>bool</span>
+            </p>
+          </section>
+          <div class="description"><p>isSorted</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.isSorted = function() {
 	return this._isSorted;
-};
-
-// toJSON
-Collection.prototype.toJSON = function(stringified) {
+};</code></pre>
+          <section id="toJSON">
+            <h1>toJSON</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.toJSON()</span> -><span>Object String</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>true</td>
+                <td>Bool</td>
+                <td><p>for stringified return, false for object</p></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Object,String</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>toJSON</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.toJSON = function(stringified) {
 	var result = {
 		name: this.name,
 		id: this.id,
@@ -684,31 +771,72 @@ Collection.prototype.save = function(options) {
 	});
 
 	return saveObject;
-};
-
-// event handlers
-Collection.prototype.onSort = function(evt) {
+};</code></pre>
+          <section id="onSort">
+            <h1>onSort</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.onSort()</span>
+            </p>
+          </section>
+          <div class="description"><p>Base onSort event handler</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.onSort = function(evt) {
 	this.log(['collection sort event handler', evt]);
-};
-
-Collection.prototype.onClear = function(evt) {
+};</code></pre>
+          <section id="onClear">
+            <h1>onClear</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.onClear()</span>
+            </p>
+          </section>
+          <div class="description"><p>Base onClear event handler</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.onClear = function(evt) {
 	this.log(['collection clear event handler', evt]);
 
 	this.length = 0;
-};
-
-Collection.prototype.onChange = function(evt) {
+};</code></pre>
+          <section id="onChange">
+            <h1>onChange</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.onChange()</span>
+            </p>
+          </section>
+          <div class="description"><p>Base onChange event handler</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.onChange = function(evt) {
 	this.log(['collection change event handler', evt]);
-};
-
-Collection.prototype.onRender = function(evt) {
+};</code></pre>
+          <section id="onRender">
+            <h1>onRender</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.onRender()</span>
+            </p>
+          </section>
+          <div class="description"><p>Base onRender event handler, called after render is done</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.onRender = function(evt) {
 	this.log(['collection render event handler', evt]);
-};
-
-Collection.prototype.onBeforeRender = function(evt) {
+};</code></pre>
+          <section id="onBeforeRender">
+            <h1>onBeforeRender</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.onBeforeRender()</span>
+            </p>
+          </section>
+          <div class="description"><p>Base onBeforeRender event handler</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.onBeforeRender = function(evt) {
 	this.log(['collection before render event handler', evt]);
 };
 // -- end Collection Class</code></pre>
+          <section id="Model">
+            <h1>Model</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-success radius ctx-type">constructor</div><span>Model()</span>
+            </p>
+          </section>
           <table class="table table-bordered table-striped">
             <thead>
               <tr>
@@ -731,6 +859,261 @@ Collection.prototype.onBeforeRender = function(evt) {
             </tbody>
           </table>
           <div class="description"><p>Model Class</p> </div>
+          <pre><code class="language-javascript">var Model = function(opt, attributes) {
+	opt = opt || {};
+
+	// basic props
+	this.guid = guid();
+	this.options = opt;
+	this.debug = opt.debug || false;
+	this._dirty = false;
+
+	// tracks changed attributes
+	this.changedAttributes = {};
+
+	// this._synced = true;
+	// this.validate = false;
+
+	this.collection = opt.collection || null;
+	this._uniqueField = 'id';
+	this.created = moment();
+	this.modified = moment();
+
+	// attributes
+	this.attributes = attributes || {};
+
+	// if there's no value for the unique field, add one
+	if (Object.keys(this.attributes).indexOf(this._uniqueField) === -1 || !this.attributes[this._uniqueField]) {
+		this.attributes[this._uniqueField] = uid();
+	}
+
+	// merge functions into this class
+	$.extend(true, this, opt.functions);
+
+	// template/dom
+	this._hasBeenRendered = false;
+	this.$el = null;
+	this.template = opt.template ? this.initTemplate(opt.template) : null;
+	this.templateRender = '';
+
+	// TODO
+	// link the $el to a dom element or query
+
+	// events
+	this._events = {};
+
+	// do anything that needs to get initialized
+	this._initialize.apply(this, this.options);
+};
+
+// internal init
+Model.prototype._initialize = function(options) {
+	this.log(['model init', options]);
+
+	this.initialize.apply(this, this.options);
+
+	// render template
+	if (this.template) {
+		this.render();
+	}
+
+	this._dirty = false;
+
+	// set the basic events
+	this.on('dirty', this.onDirty);
+	this.on('change', this.onChange);
+	this.on('render', this.onRender);
+
+};
+
+// user init
+Model.prototype.initialize = function(options) {};
+
+// mark model as clean
+Model.prototype.clean = function(opt) {
+	this.changedAttributes = {};
+	this._dirty = false;
+};
+
+// return single value or object of values from array of keys
+Model.prototype.get = function(key) {
+	this.log(['model get', key]);
+
+	if (!key) {
+		return this.getAttributes();
+	} else if ($.isArray(key)) {
+		var result = {},
+			model = this;
+
+		// go through each key, extend objects or assign values
+		key.forEach(function(k, i, a) {
+			if (typeof model[k] === &quot;object&quot;) {
+				result[k] = $.extend(true, {}, model.attributes[k]);
+			} else {
+				result[k] = model.attributes[k];
+			}
+		});
+
+		return result;
+
+	} else {
+		return this.attributes[key];
+	}
+};
+
+Model.prototype.set = function(key, value, internal, silent) {
+	this.log(['model set', key, value, internal, silent]);
+
+	var changedAttributes = [],
+		model = this,
+		localProp = null;
+
+	// if the key is an object, we shift the arguments, as we don't have a value
+	if (typeof key === &quot;object&quot;) {
+		silent = internal;
+		internal = value;
+		value = null;
+
+		if (internal) {
+			model = $.extend(true, {}, model, key);
+		} else {
+			model.attributes = $.extend(true, {}, model.attributes, key);
+		}
+
+		// add the changed attributes into the model for tracking
+		for (var k in key) {
+			if (key.hasOwnProperty(k)) {
+				localProp = internal ? this[k] : this.attributes[k];
+
+				if (!isEqual(localProp, key[k])) {
+					this.changedAttributes[k] = key[k];
+					localProp = null;
+				}
+			}
+		}
+
+	} else {
+		if (internal) {
+			model[key] = value;
+		} else {
+			model.attributes[key] = value;
+		}
+
+		this.changedAttributes[key] = value;
+	}
+
+	// check if anything actually changed and change timestamp
+	if (Object.keys(this.changedAttributes).length) {
+		this.modified = moment();
+	}
+
+	if (!silent) {
+		this.trigger('change', {
+			changed: changedAttributes,
+			timestamp: this.modified
+		});
+	}
+
+	// set to dirty
+	this._dirty = true;
+	this.trigger('dirty', {});
+
+	return this;
+};</code></pre>
+          <section id="render">
+            <h1>render</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Model.prototype.render()</span> -><span>String</span>
+            </p>
+          </section>
+          <div class="description"><p>render<br />render item from template, or if item is clean, just return the already rendered html</p> </div>
+          <pre><code class="language-javascript">Model.prototype.render = function(options) {
+	this.log(['model render', options]);
+
+	// if we don't have a template, return json
+	if (!this.template) {
+		return this.toJSON();
+	}
+
+	// if we either don't have it at all, or the model has changed since last render
+	if (!this._hasBeenRendered) {
+		// add the guid of the model in the template for use
+		this.templateRender = this.template($.extend(true, {
+			guid: this.guid
+		}, this.attributes));
+		this._hasBeenRendered = true;
+	}
+
+	// trigger event
+	this.trigger('render', {
+		options: options
+	});
+
+	return this.templateRender;
+};</code></pre>
+          <section id="getAttributes">
+            <h1>getAttributes</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Model.prototype.getAttributes()</span> -><span>Object</span>
+            </p>
+          </section>
+          <div class="description"><p>getAttributes</p> </div>
+          <pre><code class="language-javascript">Model.prototype.getAttributes = function() {
+	this.log(['model getAttributes']);
+
+	return this.attributes;
+};</code></pre>
+          <section id="parser">
+            <h1>parser</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Model.prototype.parser()</span> -><span>Object</span>
+            </p>
+          </section>
+          <div class="description"><p>parser</p> </div>
+          <pre><code class="language-javascript">Model.prototype.parser = function(input) {
+	this.log(['model parser'], input);
+
+	var output = {};
+
+	return output;
+};</code></pre>
+          <section id="toJSON">
+            <h1>toJSON</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Model.prototype.toJSON()</span> -><span>String</span>
+            </p>
+          </section>
+          <div class="description"><p>toJSON</p> </div>
+          <pre><code class="language-javascript">Model.prototype.toJSON = function() {
+	return $.extend(true, {}, this.attributes);
+};</code></pre>
+          <section id="onChange">
+            <h1>onChange</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Model.prototype.onChange()</span>
+            </p>
+          </section>
+          <div class="description"><p>Base onChange event handler</p> </div>
+          <pre><code class="language-javascript">Model.prototype.onChange = function(evt) {
+	this.log(['model change event handler', evt]);
+};</code></pre>
+          <section id="onRender">
+            <h1>onRender</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Model.prototype.onRender()</span>
+            </p>
+          </section>
+          <div class="description"><p>Base onRender event handler</p> </div>
+          <pre><code class="language-javascript">Model.prototype.onRender = function(evt) {
+	this.log(['model render event handler', evt]);
+};</code></pre>
+          <div class="description"><p>Base onDirty event handler, model has become dirty</p> </div>
           <pre><code class="language-javascript">return true;
 	};
 

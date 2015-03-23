@@ -88,6 +88,6 @@ module.exports = function(grunt) {
   });
 
   // Default task(s).
-  grunt.registerTask('default', ['handlebars', 'copy', 'uglify', 'jsdoc']);
+  grunt.registerTask('default', ['handlebars', 'copy', 'uglify', 'doxx']);
 
 };

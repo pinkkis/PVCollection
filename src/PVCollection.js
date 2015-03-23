@@ -54,9 +54,9 @@ var PVCollection = (function() {
 		this._initialize.apply(this, this.options);
 	};
 
-	// initialize is for user content, set some basic stuff first
 	/**
 	 * Internal Initialization method
+	 * initialize is for user content, set some basic stuff first
 	 * @param {object} options The options from the constructors are passed to this method
 	 */
 	Collection.prototype._initialize = function(options) {
@@ -81,21 +81,41 @@ var PVCollection = (function() {
 		});
 	};
 
-	// init the list, set items, events and stuff
+	/**
+	 * Initialization method
+	 * User overridable init method.
+	 */
 	Collection.prototype.initialize = function() {};
 
-	// return props
+	/**
+	 * isDirty
+	 * @return {bool} true if list is in a dirty state
+	 */
 	Collection.prototype.isDirty = function() {
 		return this._isDirty;
 	};
+
+	/**
+	 * isSaving
+	 * @return {bool} true if list is currently saving
+	 */
 	Collection.prototype.isSaving = function() {
 		return this._isSaving;
 	};
+
+	/**
+	 * isSorted
+	 * @return {bool} true if list is in order
+	 */
 	Collection.prototype.isSorted = function() {
 		return this._isSorted;
 	};
 
-	// toJSON
+	/**
+	 * toJSON
+	 * @param {Bool} true for stringified return, false for object
+	 * @return {Object|String} collection data as an object or stringified
+	 */
 	Collection.prototype.toJSON = function(stringified) {
 		var result = {
 			name: this.name,
@@ -552,25 +572,39 @@ var PVCollection = (function() {
 		return saveObject;
 	};
 
-	// event handlers
+	/**
+	 * Base onSort event handler
+	 */
 	Collection.prototype.onSort = function(evt) {
 		this.log(['collection sort event handler', evt]);
 	};
 
+	/**
+	 * Base onClear event handler
+	 */
 	Collection.prototype.onClear = function(evt) {
 		this.log(['collection clear event handler', evt]);
 
 		this.length = 0;
 	};
 
+	/**
+	 * Base onChange event handler
+	 */
 	Collection.prototype.onChange = function(evt) {
 		this.log(['collection change event handler', evt]);
 	};
 
+	/**
+	 * Base onRender event handler, called after render is done
+	 */
 	Collection.prototype.onRender = function(evt) {
 		this.log(['collection render event handler', evt]);
 	};
 
+	/**
+	 * Base onBeforeRender event handler
+	 */
 	Collection.prototype.onBeforeRender = function(evt) {
 		this.log(['collection before render event handler', evt]);
 	};
@@ -579,6 +613,7 @@ var PVCollection = (function() {
 
 	/**
 	 * Model Class
+	 *
 	 * @constructor
 	 * @param {object} opt Options object
 	 * @param {object} attributes Object of attributes that the new model will have
@@ -745,7 +780,11 @@ var PVCollection = (function() {
 		return this;
 	};
 
-	// render item from template, or if item is clean, just return the already rendered html
+	/**
+	 * render
+	 * render item from template, or if item is clean, just return the already rendered html
+	 * @return {String} rendered HTML template of the model
+	 */
 	Model.prototype.render = function(options) {
 		this.log(['model render', options]);
 
@@ -771,14 +810,20 @@ var PVCollection = (function() {
 		return this.templateRender;
 	};
 
-	// just return all attributes
+	/**
+	 * getAttributes
+	 * @return {Object} returns object of all the model data attributes
+	 */
 	Model.prototype.getAttributes = function() {
 		this.log(['model getAttributes']);
 
 		return this.attributes;
 	};
 
-	// just return all attributes
+	/**
+	 * parser
+	 * @return {Object} object of parsed data - NYI
+	 */
 	Model.prototype.parser = function(input) {
 		this.log(['model parser'], input);
 
@@ -787,20 +832,31 @@ var PVCollection = (function() {
 		return output;
 	};
 
-	// return only attributes
+	/**
+	 * toJSON
+	 * @return {String} json string of the model
+	 */
 	Model.prototype.toJSON = function() {
 		return $.extend(true, {}, this.attributes);
 	};
 
-	// event handlers
+	/**
+	 * Base onChange event handler
+	 */
 	Model.prototype.onChange = function(evt) {
 		this.log(['model change event handler', evt]);
 	};
 
+	/**
+	 * Base onRender event handler
+	 */
 	Model.prototype.onRender = function(evt) {
 		this.log(['model render event handler', evt]);
 	};
 
+	/**
+	 * Base onDirty event handler, model has become dirty
+	 */
 	Model.prototype.onDirty = function(evt) {
 		this.log(['model dirty event handler', evt]);
 
