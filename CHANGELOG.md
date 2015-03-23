@@ -1,14 +1,14 @@
 ## Planned
 
-v0.4.0
-======
-
 * Basic Collection.fetch() implemented
 	* You can overwrite this with a function that returns an array of objects that will be model data
 	* Uses deferreds
 * Basic Collection.save() implemented
 	* Collection creates a deferred
 	* Once deferred is resolved, the Collection receives a new array and uses .set() - if there's no return value, just clear dirty and changedAttributes
+* Basic Model.save() and .fetch()
+* Give collection an element and it'll draw itself to that
+	* Models in collection can update themselves and cause whole collection to redraw
 
 ## Implemented
 
@@ -73,5 +73,5 @@ v0.2.0
 * Collection
 	* .add() .remove() .sort() .where() .clear() .get() - methods working
 * Model
-	* .set() .get() .toJSON .render()
+	* .set() .get() .toJSON() .render()
 * Events: adding, removing and triggering

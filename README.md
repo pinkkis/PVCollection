@@ -37,5 +37,4 @@ PVCollection has a hard dependency on jQuery, and currently uses Handlebars for 
 
 ## License
 
-Copyright (c) 2015 Kristian Koivisto-Kokko. See the LICENSE file for license rights and
-limitations (MIT).
+Copyright (c) 2015 Kristian Koivisto-Kokko. See the LICENSE file for license rights and limitations (MIT).
