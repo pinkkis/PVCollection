@@ -4,8 +4,13 @@
 
 var PVCollection = (function() {
 
-	// Collection Class
-	// ----------------
+	/**
+	 * Collection Class
+	 *
+	 * @constructor
+	 * @param {object} opt Object of options
+	 * @param {object} model The model object base
+	 */
 	var Collection = function(opt, model) {
 		if (!opt) {
 			throw new Error('No options provided for Collection!');
@@ -50,6 +55,10 @@ var PVCollection = (function() {
 	};
 
 	// initialize is for user content, set some basic stuff first
+	/**
+	 * Internal Initialization method
+	 * @param {object} options The options from the constructors are passed to this method
+	 */
 	Collection.prototype._initialize = function(options) {
 		this.log(['collection init', this.name]);
 
@@ -568,8 +577,12 @@ var PVCollection = (function() {
 	// -- end Collection Class
 
 
-	// Model Class
-	// -----------
+	/**
+	 * Model Class
+	 * @constructor
+	 * @param {object} opt Options object
+	 * @param {object} attributes Object of attributes that the new model will have
+	 */
 	var Model = function(opt, attributes) {
 		opt = opt || {};
 
