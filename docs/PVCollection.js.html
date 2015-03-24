@@ -92,6 +92,38 @@
               </li>
               <li><a href="#toJSON"><i class="alert alert-info"></i><span>toJSON</span></a>
               </li>
+              <li><a href="#clean"><i class="alert alert-info"></i><span>clean</span></a>
+              </li>
+              <li><a href="#get"><i class="alert alert-info"></i><span>get</span></a>
+              </li>
+              <li><a href="#first"><i class="alert alert-info"></i><span>first</span></a>
+              </li>
+              <li><a href="#last"><i class="alert alert-info"></i><span>last</span></a>
+              </li>
+              <li><a href="#set"><i class="alert alert-info"></i><span>set</span></a>
+              </li>
+              <li><a href="#add"><i class="alert alert-info"></i><span>add</span></a>
+              </li>
+              <li><a href="#remove"><i class="alert alert-info"></i><span>remove</span></a>
+              </li>
+              <li><a href="#where"><i class="alert alert-info"></i><span>where</span></a>
+              </li>
+              <li><a href="#sort"><i class="alert alert-info"></i><span>sort</span></a>
+              </li>
+              <li><a href="#filter"><i class="alert alert-info"></i><span>filter</span></a>
+              </li>
+              <li><a href="#map"><i class="alert alert-info"></i><span>map</span></a>
+              </li>
+              <li><a href="#contains"><i class="alert alert-info"></i><span>contains</span></a>
+              </li>
+              <li><a href="#clear"><i class="alert alert-info"></i><span>clear</span></a>
+              </li>
+              <li><a href="#render"><i class="alert alert-info"></i><span>render</span></a>
+              </li>
+              <li><a href="#fetch"><i class="alert alert-info"></i><span>fetch</span></a>
+              </li>
+              <li><a href="#save"><i class="alert alert-info"></i><span>save</span></a>
+              </li>
               <li><a href="#onSort"><i class="alert alert-info"></i><span>onSort</span></a>
               </li>
               <li><a href="#onClear"><i class="alert alert-info"></i><span>onClear</span></a>
@@ -253,7 +285,7 @@
               <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.initialize()</span>
             </p>
           </section>
-          <div class="description"><p>Initialization method<br />User overridable init method.</p> </div>
+          <div class="description"><p>User overridable init method.</p> </div>
           <pre><code class="language-javascript">Collection.prototype.initialize = function() {};</code></pre>
           <section id="isDirty">
             <h1>isDirty</h1>
@@ -262,7 +294,7 @@
               <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.isDirty()</span> -><span>bool</span>
             </p>
           </section>
-          <div class="description"><p>isDirty</p> </div>
+          <div class="description"> </div>
           <pre><code class="language-javascript">Collection.prototype.isDirty = function() {
 	return this._isDirty;
 };</code></pre>
@@ -273,7 +305,7 @@
               <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.isSaving()</span> -><span>bool</span>
             </p>
           </section>
-          <div class="description"><p>isSaving</p> </div>
+          <div class="description"> </div>
           <pre><code class="language-javascript">Collection.prototype.isSaving = function() {
 	return this._isSaving;
 };</code></pre>
@@ -284,7 +316,7 @@
               <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.isSorted()</span> -><span>bool</span>
             </p>
           </section>
-          <div class="description"><p>isSorted</p> </div>
+          <div class="description"> </div>
           <pre><code class="language-javascript">Collection.prototype.isSorted = function() {
 	return this._isSorted;
 };</code></pre>
@@ -316,7 +348,7 @@
               </tr>
             </tbody>
           </table>
-          <div class="description"><p>toJSON</p> </div>
+          <div class="description"> </div>
           <pre><code class="language-javascript">Collection.prototype.toJSON = function(stringified) {
 	var result = {
 		name: this.name,
@@ -335,10 +367,32 @@
 	} else {
 		return result;
 	}
-};
-
-// get the array of items
-Collection.prototype.clean = function(deep) {
+};</code></pre>
+          <section id="clean">
+            <h1>clean</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.clean()</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>deep</td>
+                <td>Bool</td>
+                <td><p>clean with true</p></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>clean the collection from dirty status. optionally, clean each item in the list as well.</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.clean = function(deep) {
 	this.log(['collection clean']);
 
 	this._dirty = false;
@@ -348,10 +402,37 @@ Collection.prototype.clean = function(deep) {
 			item.clean();
 		});
 	}
-};
-
-// get an item with index or the array of items
-Collection.prototype.get = function(index) {
+};</code></pre>
+          <section id="get">
+            <h1>get</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.get()</span> -><span>Object</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>index</td>
+                <td>Int</td>
+                <td><p>of model in the collection</p></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Object</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"> </div>
+          <pre><code class="language-javascript">Collection.prototype.get = function(index) {
 	this.log(['collection get', index]);
 
 	if (!isNaN(index) &amp;&amp; index &gt; -1) {
@@ -359,10 +440,16 @@ Collection.prototype.get = function(index) {
 	} else {
 		return this.items;
 	}
-};
-
-// get the array of items
-Collection.prototype.first = function() {
+};</code></pre>
+          <section id="first">
+            <h1>first</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.first()</span> -><span>Object</span>
+            </p>
+          </section>
+          <div class="description"> </div>
+          <pre><code class="language-javascript">Collection.prototype.first = function() {
 	this.log(['collection first']);
 
 	if (this.length) {
@@ -370,10 +457,16 @@ Collection.prototype.first = function() {
 	} else {
 		return null;
 	}
-};
-
-// get the array of items
-Collection.prototype.last = function() {
+};</code></pre>
+          <section id="last">
+            <h1>last</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.last()</span> -><span>Object</span>
+            </p>
+          </section>
+          <div class="description"> </div>
+          <pre><code class="language-javascript">Collection.prototype.last = function() {
 	this.log(['collection last']);
 
 	if (this.length) {
@@ -381,10 +474,42 @@ Collection.prototype.last = function() {
 	} else {
 		return null;
 	}
-};
-
-// set a new array of items in to the list, and report the change
-Collection.prototype.set = function(items, options) {
+};</code></pre>
+          <section id="set">
+            <h1>set</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.set()</span> -><span>Object</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>array</td>
+                <td>Array</td>
+                <td><p>of items to be set as the new content of the collection</p></td>
+              </tr>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td><p>for setting the content</p></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Object</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"> </div>
+          <pre><code class="language-javascript">Collection.prototype.set = function(items, options) {
 	options = options || {};
 
 	var self = this,
@@ -464,10 +589,42 @@ Collection.prototype.set = function(items, options) {
 	}
 
 	return this;
-};
-
-// add an array of items, with options
-Collection.prototype.add = function(items, options) {
+};</code></pre>
+          <section id="add">
+            <h1>add</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.add()</span> -><span>Object</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>array</td>
+                <td>Array</td>
+                <td><p>of items to be added to the collection</p></td>
+              </tr>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td><p>for setting the content</p></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Object</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"> </div>
+          <pre><code class="language-javascript">Collection.prototype.add = function(items, options) {
 	this.log(['collection add', items, options]);
 
 	options = options || {};
@@ -511,10 +668,42 @@ Collection.prototype.add = function(items, options) {
 	}
 
 	return this;
-};
-
-// remove an item
-Collection.prototype.remove = function(_id, options) {
+};</code></pre>
+          <section id="remove">
+            <h1>remove</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.remove()</span> -><span>Object</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>id,</td>
+                <td></td>
+                <td><p>model or other unique identifier to select removed model</p></td>
+              </tr>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td><p>for setting the content</p></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Object</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"> </div>
+          <pre><code class="language-javascript">Collection.prototype.remove = function(_id, options) {
 	this.log(['collection remove', _id, options]);
 
 	options = options || {};
@@ -561,12 +750,47 @@ Collection.prototype.remove = function(_id, options) {
 	} else {
 		return this;
 	}
-};
-
-// get an array of items where attributes[key] === value.
-// first argument can also be a function that will be used for the grep instead
-// if internal is true, then &quot;private&quot; properties can be compared
-Collection.prototype.where = function(key, value, internal) {
+};</code></pre>
+          <section id="where">
+            <h1>where</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.where()</span> -><span>Array</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>array</td>
+                <td></td>
+                <td><p>of items to be set as the new content of the collection</p></td>
+              </tr>
+              <tr>
+                <td>value</td>
+                <td></td>
+                <td><p>for key</p></td>
+              </tr>
+              <tr>
+                <td>flag</td>
+                <td>Bool</td>
+                <td><p>for using internal values intead of attributes</p></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Array</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>get an array of items where attributes[key] === value.<br />first argument can also be a function that will be used for the grep instead<br />if internal is true, then &quot;private&quot; properties can be compared</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.where = function(key, value, internal) {
 	this.log(['collection where', key, value, internal]);
 
 	// if the first argument was a function
@@ -585,10 +809,42 @@ Collection.prototype.where = function(key, value, internal) {
 			}
 		});
 	}
-};
-
-// sort the item list
-Collection.prototype.sort = function(options, fn) {
+};</code></pre>
+          <section id="sort">
+            <h1>sort</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.sort()</span> -><span>Object</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>sorting</td>
+                <td>Function</td>
+                <td><p>comparator - function(item, index, array)</p></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Object</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>sort the collection with a custom function or default to defautl sorting</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.sort = function(options, fn) {
 	this.log(['collection sort', options, fn]);
 
 	if (typeof options === &quot;function&quot;) {
@@ -607,11 +863,37 @@ Collection.prototype.sort = function(options, fn) {
 	this._isSorted = true;
 
 	return this;
-};
-
-// filter the list with custom filter
-// fn is function(item, index, array)
-Collection.prototype.filter = function(fn) {
+};</code></pre>
+          <section id="filter">
+            <h1>filter</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.filter()</span> -><span>Array</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>function(item,</td>
+                <td>Function</td>
+                <td><p>index, array)</p></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Array</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>filter using a custom fiter</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.filter = function(fn) {
 	this.log(['collection filter', fn]);
 
 	if (typeof fn !== &quot;function&quot;) {
@@ -619,11 +901,37 @@ Collection.prototype.filter = function(fn) {
 	}
 
 	return this.items.filter(fn);
-};
-
-// run Array.map on the items array
-// fn is function(item)
-Collection.prototype.map = function(fn) {
+};</code></pre>
+          <section id="map">
+            <h1>map</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.map()</span> -><span>Array</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>function(item)</td>
+                <td>Function</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Array</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>run Array.map on the items array</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.map = function(fn) {
 	this.log(['collection map', fn]);
 
 	if (typeof fn !== &quot;function&quot;) {
@@ -631,18 +939,71 @@ Collection.prototype.map = function(fn) {
 	}
 
 	return this.items.map(fn);
-};
-
-// returns boolean if an item in collection matches comparator fn
-// fn example: function(element, index, array) { return elem &gt; 10; }
-Collection.prototype.contains = function(fn) {
+};</code></pre>
+          <section id="contains">
+            <h1>contains</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.contains()</span> -><span>Bool</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>function(element,</td>
+                <td>Function</td>
+                <td><p>index, array) { return elem &gt; 10; }</p></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Bool</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>returns boolean if an item in collection matches comparator fn</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.contains = function(fn) {
 	this.log(['collection contains', fn]);
 
 	return this.items.some(fn);
-};
-
-// clear the whole list
-Collection.prototype.clear = function(options) {
+};</code></pre>
+          <section id="clear">
+            <h1>clear</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.clear()</span> -><span>Object</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Object</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>clear the whole list</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.clear = function(options) {
 	this.log(['collection clear', options]);
 
 	this.trigger('clear', {
@@ -653,10 +1014,37 @@ Collection.prototype.clear = function(options) {
 	this.items = [];
 
 	return this;
-};
-
-// render the list
-Collection.prototype.render = function(options) {
+};</code></pre>
+          <section id="render">
+            <h1>render</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.render()</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>render the whole list, and optionally child models</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.render = function(options) {
 	options = options || {};
 
 	var listItems = [];
@@ -696,10 +1084,42 @@ Collection.prototype.render = function(options) {
 	});
 
 	return this.templateRender;
-};
-
-// built in quick fetch, overwrite this method to change functionality
-Collection.prototype.fetch = function(url, options) {
+};</code></pre>
+          <section id="fetch">
+            <h1>fetch</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.fetch()</span> -><span>Function</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>url</td>
+                <td>String</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Function</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>built in quick fetch, overwrite this method to change functionality</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.fetch = function(url, options) {
 	this.log(['collection fetch', url, options]);
 
 	var fetch = $.Deferred,
@@ -730,10 +1150,37 @@ Collection.prototype.fetch = function(url, options) {
 		});
 
 	return fetch;
-};
-
-// hand the items over to a third party method that saves them and lets us know
-Collection.prototype.save = function(options) {
+};</code></pre>
+          <section id="save">
+            <h1>save</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Collection.prototype.save()</span> -><span>Function</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Function</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>hand the items over to a third party method that saves them and lets us know</p> </div>
+          <pre><code class="language-javascript">Collection.prototype.save = function(options) {
 	this.log(['collection save', options]);
 
 

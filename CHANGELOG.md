@@ -12,13 +12,31 @@
 
 ## Implemented
 
+v0.3.5
+======
+
+* Added onError and error event to Collection
+* Fixed issue where collection.set's changed items didn't correctly find the matching old item
+* jQuery is passed to the iife
+* Collection.set doesn't emit a change if there were no changes
+* Collection now has a dirty event and state, which is set on add, set and remove
+* Collection defaultComparator added, and collectio.setComparator() added to set it during runtime
+* Model.set localProp nulling done on every loop
+* Model.set uses 'model' and not 'this' in it, to clarify what is changing
+* Collection.remove returns false if model was not found
+* Added collection.$container as the dom container
+* Wrapped the whole thing in an IIFE, still assigning a global PVCollection object
+* Fixed issue in model.set() where attributes were merged before comparison was done, making it impossible to tell what changed
+* Collection.add can now return the array of models that was added
+* Collection.set change event now has an array of models, not input items for added
+
 v0.3.1
 ======
 
 * Renamed test folder to examples, as it's not for unit test or anything
 * Added and tweaked examples
 * Added an incremental id counter to models
-* If on creation, a model is missing a value in the _uniqueField specified property, or it's falsy, add a unique id into it
+* If on creation a model is missing a value in the _uniqueField specified property, or it's falsy, add a unique id into it
 * Renamed event handler functions to camelcase
 * Added very basic collection fetch and save, that depend on external resolving of their deferreds
 

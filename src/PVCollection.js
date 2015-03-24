@@ -1,8 +1,8 @@
 /* jshint jquery:true, browser:true, eqeqeq:false, undef:true, unused:false, quotmark:false, expr:true, devel:true */
 /* globals Handlebars, JST, moment */
 /* exported PVCollection */
-
-var PVCollection = (function() {
+(function($, Handlebars, moment, window){
+	'use strict';
 
 	/**
 	 * Collection Class
@@ -27,6 +27,11 @@ var PVCollection = (function() {
 		this.initialized = false;
 		this.created = moment();
 
+		// default sorting
+		this.sortComparator = function(a, b) {
+			return a.attributes[a._uniqueField] < b.attributes[b._uniqueField];
+		};
+
 		// template
 		this.template = opt.template ? this.initTemplate(opt.template) : null;
 		this._hasBeenRendered = false;
@@ -46,6 +51,9 @@ var PVCollection = (function() {
 
 		// collection
 		this.items = [];
+
+		// DOM container element
+		this.$container = null;
 
 		// events
 		this._events = {};
@@ -68,6 +76,8 @@ var PVCollection = (function() {
 		this.on('render', this.onRender);
 		this.on('change', this.onChange);
 		this.on('clear', this.onClear);
+		this.on('dirty', this.onDirty);
+		this.on('error', this.onError);
 
 		// init incremented id
 		initIncrementId();
@@ -82,13 +92,11 @@ var PVCollection = (function() {
 	};
 
 	/**
-	 * Initialization method
 	 * User overridable init method.
 	 */
 	Collection.prototype.initialize = function() {};
 
 	/**
-	 * isDirty
 	 * @return {bool} true if list is in a dirty state
 	 */
 	Collection.prototype.isDirty = function() {
@@ -96,7 +104,6 @@ var PVCollection = (function() {
 	};
 
 	/**
-	 * isSaving
 	 * @return {bool} true if list is currently saving
 	 */
 	Collection.prototype.isSaving = function() {
@@ -104,7 +111,6 @@ var PVCollection = (function() {
 	};
 
 	/**
-	 * isSorted
 	 * @return {bool} true if list is in order
 	 */
 	Collection.prototype.isSorted = function() {
@@ -112,7 +118,6 @@ var PVCollection = (function() {
 	};
 
 	/**
-	 * toJSON
 	 * @param {Bool} true for stringified return, false for object
 	 * @return {Object|String} collection data as an object or stringified
 	 */
@@ -136,7 +141,10 @@ var PVCollection = (function() {
 		}
 	};
 
-	// get the array of items
+	/**
+	 * clean the collection from dirty status. optionally, clean each item in the list as well.
+	 * @param {Bool} deep clean with true
+	 */
 	Collection.prototype.clean = function(deep) {
 		this.log(['collection clean']);
 
@@ -149,7 +157,10 @@ var PVCollection = (function() {
 		}
 	};
 
-	// get an item with index or the array of items
+	/**
+	 * @param {Int} index of model in the collection
+	 * @return {Object} model
+	 */
 	Collection.prototype.get = function(index) {
 		this.log(['collection get', index]);
 
@@ -160,7 +171,9 @@ var PVCollection = (function() {
 		}
 	};
 
-	// get the array of items
+	/**
+	 * @return {Object} first model in the collection
+	 */
 	Collection.prototype.first = function() {
 		this.log(['collection first']);
 
@@ -171,7 +184,9 @@ var PVCollection = (function() {
 		}
 	};
 
-	// get the array of items
+	/**
+	 * @return {Object} last model in the list
+	 */
 	Collection.prototype.last = function() {
 		this.log(['collection last']);
 
@@ -182,7 +197,11 @@ var PVCollection = (function() {
 		}
 	};
 
-	// set a new array of items in to the list, and report the change
+	/**
+	 * @param {Array} array of items to be set as the new content of the collection
+	 * @param {Object} options for setting the content
+	 * @return {Object} collection for chaining
+	 */
 	Collection.prototype.set = function(items, options) {
 		options = options || {};
 
@@ -195,19 +214,17 @@ var PVCollection = (function() {
 
 		this.log(['collection set', items, options]);
 
-		// list is not sorted
-		this._isSorted = false;
-
 		// find items that change or get removed
-		this.items.forEach(function(oldItem, idx, arr) {
+		self.items.forEach(function(oldItem, idx, arr) {
 			// if we cannot find this unique item in the new list, add it to the to be removed list
 			// otherwise add it to the to be changed list
 			var itemIdx = items.map(function(x) {
-				return x[oldItem._uniqueField];
-			}).indexOf(oldItem.attributes[oldItem._uniqueField]);
+							return x[oldItem._uniqueField];
+						}).indexOf(oldItem.attributes[oldItem._uniqueField]);
 
 			if (itemIdx === -1) {
 				toBeRemoved.push(oldItem);
+				self._isSorted = false;
 			} else {
 				toBeChanged.push(oldItem);
 			}
@@ -227,45 +244,59 @@ var PVCollection = (function() {
 
 		// process to be changed
 		toBeChanged.forEach(function(oldItem, idx, arr) {
-			// TODO - provide the attributes that changed as well
-			var newIdx = items.indexOf(oldItem.attributes[oldItem._uniqueField]),
-				newItem = items.splice(newIdx, 1)[0];
+			var itemIdx = items.map(function(x) {
+							return x[oldItem._uniqueField];
+						}).indexOf(oldItem.attributes[oldItem._uniqueField]);
+			var newItem = items.splice(itemIdx, 1)[0];
 
 			var changedItem = oldItem.set(newItem, false, true);
 
 			if (Object.keys(changedItem.changedAttributes).length) {
 				changedItems.push(oldItem);
+				self._isSorted = false;
 			}
 		});
 
 		// new we only have remaining new items in the items list
-		addedItems = items.slice(0);
-		this.add(items, {
-			silent: true,
-			noSort: true
-		});
+		if (items.length) {
+			self._isSorted = false;
+			addedItems = self.add(items, {
+							silent: true,
+							noSort: true,
+							returnItems: true
+						});
+		}
 
-		// sort list
-		// TODO when sorting is remembered, do that here
-		this.sort();
+		// sort list using default sort comparator
+		self.sort();
 
 		// set length
-		this.length = this.items.length;
+		self.length = self.items.length;
 
-		this._hasBeenRendered = false;
+		// if items changed, then mark as dirty and not rendered and not sorted
+		if (addedItems.length || removedItems.length || changedItems.length) {
+			self._hasBeenRendered = false;
+			self._dirty = true;
+			self.trigger('dirty', {});
 
-		if (!options.silent) {
-			this.trigger('change', {
-				added: addedItems,
-				removed: removedItems,
-				changed: changedItems
-			});
+			// if not silent, send change event
+			if (!options.silent) {
+				self.trigger('change', {
+					added: addedItems,
+					removed: removedItems,
+					changed: changedItems
+				});
+			}			
 		}
 
 		return this;
 	};
 
-	// add an array of items, with options
+	/**
+	 * @param {Array} array of items to be added to the collection
+	 * @param {Object} options for setting the content
+	 * @return {Object} collection for chaining
+	 */
 	Collection.prototype.add = function(items, options) {
 		this.log(['collection add', items, options]);
 
@@ -280,9 +311,7 @@ var PVCollection = (function() {
 			addedItems = [];
 
 		items.forEach(function(itemData, idx, arr) {
-			var newModel = $.extend(true, {}, collection.model, {
-				collection: collection
-			}, options);
+			var newModel = $.extend(true, {}, collection.model, { collection: collection });
 			var newItem = new Model(newModel, $.extend(true, {}, collection.model.attributes, itemData));
 
 			collection.items.push(newItem);
@@ -296,23 +325,35 @@ var PVCollection = (function() {
 
 		// sort if requested
 		if (!options.noSort) {
-			// TODO
-			// add list sort func here
 			this.sort();
 		}
 
-		if (!options.silent) {
-			this.trigger('change', {
-				added: addedItems.slice(0),
-				removed: [],
-				changed: []
-			});
+		if (addedItems.length) {
+			this._dirty = true;
+			this.trigger('dirty', {});
+
+			if (!options.silent) {
+				this.trigger('change', {
+					added: addedItems,
+					removed: [],
+					changed: []
+				});
+			}
 		}
 
-		return this;
+		// return requested data
+		if (options.returnItems) {
+			return addedItems;
+		} else {
+			return this;
+		}
 	};
 
-	// remove an item
+	/**
+	 * @param {Int, Object, String} id, model or other unique identifier to select removed model
+	 * @param {Object} options for setting the content
+	 * @return {Object} collection for chaining or removed model, based on options
+	 */
 	Collection.prototype.remove = function(_id, options) {
 		this.log(['collection remove', _id, options]);
 
@@ -320,7 +361,7 @@ var PVCollection = (function() {
 
 		var id = -1,
 			itemIndex,
-			removedModel;
+			removedModel = null;
 
 		// parse what the request item is
 		// support either string/number for id or passing in a model to remove it
@@ -345,8 +386,12 @@ var PVCollection = (function() {
 		// set length
 		this.length = this.items.length;
 
+		// set states
 		this._hasBeenRendered = false;
+		this._dirty = true;
+		this.trigger('dirty', {});
 
+		// emit change if needed
 		if (!options.silent) {
 			this.trigger('change', {
 				added: [],
@@ -355,6 +400,7 @@ var PVCollection = (function() {
 			});
 		}
 
+		// return requested data
 		if (options.returnItem) {
 			return removedModel;
 		} else {
@@ -362,9 +408,16 @@ var PVCollection = (function() {
 		}
 	};
 
-	// get an array of items where attributes[key] === value.
-	// first argument can also be a function that will be used for the grep instead
-	// if internal is true, then "private" properties can be compared
+	/**
+	 * get an array of items where attributes[key] === value.
+	 * first argument can also be a function that will be used for the grep instead
+	 * if internal is true, then "private" properties can be compared
+	 *
+	 * @param {String, Function} array of items to be set as the new content of the collection
+	 * @param {Object, String, Array} value for key
+	 * @param {Bool} flag for using internal values intead of attributes
+	 * @return {Array} array of items
+	 */
 	Collection.prototype.where = function(key, value, internal) {
 		this.log(['collection where', key, value, internal]);
 
@@ -376,7 +429,7 @@ var PVCollection = (function() {
 			return $.grep(this.items, key);
 
 		} else {
-			return $.grep(this.items, function(item, idx) {
+			return $.grep(this.items, function(item) {
 				if (internal) {
 					return item[key] === value;
 				} else {
@@ -386,7 +439,13 @@ var PVCollection = (function() {
 		}
 	};
 
-	// sort the item list
+	/**
+	 * sort the collection with a custom function or default to defautl sorting
+	 *
+	 * @param {Object} options
+	 * @param {Function} sorting comparator - function(item, index, array)
+	 * @return {Object} collection for chaining
+	 */
 	Collection.prototype.sort = function(options, fn) {
 		this.log(['collection sort', options, fn]);
 
@@ -395,9 +454,7 @@ var PVCollection = (function() {
 			options = {};
 		}
 
-		this.items.sort(fn || function(a, b) {
-			return a.attributes[a._uniqueField] < b.attributes[b._uniqueField];
-		});
+		this.items.sort(fn || this.sortComparator);
 
 		if (!options || !options.silent) {
 			this.trigger('sort', {});
@@ -408,8 +465,34 @@ var PVCollection = (function() {
 		return this;
 	};
 
-	// filter the list with custom filter
-	// fn is function(item, index, array)
+	/**
+	 * set the default list sorting comparator
+	 *
+	 * @param {Function} sorting comparator - function(item, index, array)
+	 * @param {Object} options
+	 * @return {Object} collection for chaining
+	 */
+	Collection.prototype.setComparator = function(fn, opt) {
+		this.log(['set comparator', fn, opt]);
+
+		if (typeof fn === "function") {
+			this.sortComparator = fn;
+		} else {
+			this.trigger('error', {
+				message: 'Passed comparator is not a function',
+				data: fn
+			});
+		}
+
+		return this;
+	};
+
+	/**
+	 * filter using a custom fiter
+	 *
+	 * @param {Function} function(item, index, array)
+	 * @return {Array} models
+	 */
 	Collection.prototype.filter = function(fn) {
 		this.log(['collection filter', fn]);
 
@@ -420,8 +503,12 @@ var PVCollection = (function() {
 		return this.items.filter(fn);
 	};
 
-	// run Array.map on the items array
-	// fn is function(item)
+	/**
+	 * run Array.map on the items array
+	 *
+	 * @param {Function} function(item)
+	 * @return {Array} models
+	 */
 	Collection.prototype.map = function(fn) {
 		this.log(['collection map', fn]);
 
@@ -432,15 +519,24 @@ var PVCollection = (function() {
 		return this.items.map(fn);
 	};
 
-	// returns boolean if an item in collection matches comparator fn
-	// fn example: function(element, index, array) { return elem > 10; }
+	/**
+	 * returns boolean if an item in collection matches comparator fn
+	 *
+	 * @param {Function} function(element, index, array) { return elem > 10; }
+	 * @return {Bool} true if item matching was found
+	 */
 	Collection.prototype.contains = function(fn) {
 		this.log(['collection contains', fn]);
 
 		return this.items.some(fn);
 	};
 
-	// clear the whole list
+	/**
+	 * clear the whole list
+	 *
+	 * @param {Object} options
+	 * @return {Object} collection
+	 */
 	Collection.prototype.clear = function(options) {
 		this.log(['collection clear', options]);
 
@@ -454,7 +550,12 @@ var PVCollection = (function() {
 		return this;
 	};
 
-	// render the list
+	/**
+	 * render the whole list, and optionally child models
+	 *
+	 * @param {Object} options
+	 * @return {String, Function} rendered template in string or function form
+	 */
 	Collection.prototype.render = function(options) {
 		options = options || {};
 
@@ -497,7 +598,13 @@ var PVCollection = (function() {
 		return this.templateRender;
 	};
 
-	// built in quick fetch, overwrite this method to change functionality
+	/**
+	 * built in quick fetch, overwrite this method to change functionality
+	 *
+	 * @param {String} url
+	 * @param {Object} options
+	 * @return {Function} deferred item
+	 */
 	Collection.prototype.fetch = function(url, options) {
 		this.log(['collection fetch', url, options]);
 
@@ -531,7 +638,12 @@ var PVCollection = (function() {
 		return fetch;
 	};
 
-	// hand the items over to a third party method that saves them and lets us know
+	/**
+	 * hand the items over to a third party method that saves them and lets us know
+	 *
+	 * @param {Object} options
+	 * @return {Function} deferred item
+	 */
 	Collection.prototype.save = function(options) {
 		this.log(['collection save', options]);
 
@@ -608,8 +720,22 @@ var PVCollection = (function() {
 	Collection.prototype.onBeforeRender = function(evt) {
 		this.log(['collection before render event handler', evt]);
 	};
-	// -- end Collection Class
 
+	/**
+	 * Base onDirty event handler
+	 */
+	Collection.prototype.onDirty = function(evt) {
+		this.log(['collection dirty event handler', evt]);
+	};
+
+	/**
+	 * Base onError event handler
+	 */
+	Collection.prototype.onError = function(evt) {
+		this.log(['collection error event handler', evt]);
+	};
+
+	// -- end Collection Class
 
 	/**
 	 * Model Class
@@ -682,7 +808,6 @@ var PVCollection = (function() {
 		this.on('dirty', this.onDirty);
 		this.on('change', this.onChange);
 		this.on('render', this.onRender);
-
 	};
 
 	// user init
@@ -733,22 +858,22 @@ var PVCollection = (function() {
 			internal = value;
 			value = null;
 
+			// add the changed attributes into the model for tracking
+			for (var k in key) {
+				if (key.hasOwnProperty(k)) {
+					localProp = internal ? model[k] : model.attributes[k];
+
+					if (!isEqual(localProp, key[k])) {
+						model.changedAttributes[k] = key[k];
+					}
+				}
+			}
+
+			// merge
 			if (internal) {
 				model = $.extend(true, {}, model, key);
 			} else {
 				model.attributes = $.extend(true, {}, model.attributes, key);
-			}
-
-			// add the changed attributes into the model for tracking
-			for (var k in key) {
-				if (key.hasOwnProperty(k)) {
-					localProp = internal ? this[k] : this.attributes[k];
-
-					if (!isEqual(localProp, key[k])) {
-						this.changedAttributes[k] = key[k];
-						localProp = null;
-					}
-				}
 			}
 
 		} else {
@@ -758,26 +883,26 @@ var PVCollection = (function() {
 				model.attributes[key] = value;
 			}
 
-			this.changedAttributes[key] = value;
+			model.changedAttributes[key] = value;
 		}
 
 		// check if anything actually changed and change timestamp
-		if (Object.keys(this.changedAttributes).length) {
-			this.modified = moment();
+		if (Object.keys(model.changedAttributes).length) {
+			model.modified = moment();
 		}
 
 		if (!silent) {
-			this.trigger('change', {
+			model.trigger('change', {
 				changed: changedAttributes,
-				timestamp: this.modified
+				timestamp: model.modified
 			});
 		}
 
 		// set to dirty
-		this._dirty = true;
-		this.trigger('dirty', {});
+		model._dirty = true;
+		model.trigger('dirty', {});
 
-		return this;
+		return model;
 	};
 
 	/**
@@ -1050,7 +1175,12 @@ var PVCollection = (function() {
 		return true;
 	};
 
-	// return
-	return Collection;
+	// store existing item
+	if (window.PVCollection) {
+		Collection.oldObject = PVCollection;
+	}
 
-})();
+	// expose global
+	window.PVCollection = Collection;
+
+})(jQuery, Handlebars, moment, window);

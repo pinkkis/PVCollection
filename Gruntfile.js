@@ -49,6 +49,19 @@ module.exports = function(grunt) {
         ],
       },
     },
+    concat: {
+      main: {
+        files: {
+          'dist/PVCollection.js': [
+            'src/intro.js', 
+            'src/Collection.js', 
+            'src/Model.js', 
+            'src/Helpers.js', 
+            'outro.js'
+          ],
+        },
+      },
+    },
     watch: {
       code: {
         files: ['**/*.js'],
@@ -88,6 +101,7 @@ module.exports = function(grunt) {
   });
 
   // Default task(s).
-  grunt.registerTask('default', ['handlebars', 'copy', 'uglify', 'doxx']);
+  grunt.registerTask('default', ['handlebars', 'copy', 'uglify']);
+  grunt.registerTask('docs', ['doxx']);
 
 };
