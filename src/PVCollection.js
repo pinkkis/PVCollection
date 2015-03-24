@@ -220,10 +220,11 @@
 	 * @return {Object} collection for chaining
 	 */
 	Collection.prototype.set = function(items, options) {
-		if (!items || !$.isArray(items)) {
+		if ( !items || !$.isArray(items) ) {
+
 			this.trigger('error', {
 				message: 'Collection.set() must receive an array of items as the first argument',
-				data: items || null;
+				data: items || null
 			});
 
 			return false;
@@ -1254,7 +1255,7 @@
 
 	// store existing item
 	if (window.PVCollection) {
-		Collection.oldObject = PVCollection;
+		Collection.oldObject = window.PVCollection;
 	}
 
 	// expose global
