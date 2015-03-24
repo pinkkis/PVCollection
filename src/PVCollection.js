@@ -165,7 +165,16 @@
 		this.log(['collection get', index]);
 
 		if (!isNaN(index) && index > -1) {
-			return this.items[index];
+			if (this.items[index]) {
+				return this.items[index];
+			} else {
+				this.trigger('error', {
+					message: 'Passed index does not exist',
+					data: index
+				});
+
+				return false;
+			}
 		} else {
 			return this.items;
 		}
@@ -180,6 +189,10 @@
 		if (this.length) {
 			return this.items[0];
 		} else {
+			this.trigger('error', {
+				message: 'Collection does not contain any models'
+			});
+
 			return null;
 		}
 	};
@@ -193,6 +206,10 @@
 		if (this.length) {
 			return this.items[this.length - 1];
 		} else {
+			this.trigger('error', {
+				message: 'Collection does not contain any models'
+			});
+
 			return null;
 		}
 	};
@@ -203,6 +220,15 @@
 	 * @return {Object} collection for chaining
 	 */
 	Collection.prototype.set = function(items, options) {
+		if (!items || !$.isArray(items)) {
+			this.trigger('error', {
+				message: 'Collection.set() must receive an array of items as the first argument',
+				data: items || null;
+			});
+
+			return false;
+		}
+
 		options = options || {};
 
 		var self = this,
@@ -372,6 +398,11 @@
 			// id = _id.attributes.id;
 			id = _id.attributes[_id._uniqueField];
 		} else {
+			this.trigger('error', {
+				message: 'Missing or unrecognized data passed to Collection.remove',
+				data: _id || null
+			});
+
 			return false;
 		}
 
@@ -732,7 +763,7 @@
 	 * Base onError event handler
 	 */
 	Collection.prototype.onError = function(evt) {
-		this.log(['collection error event handler', evt]);
+		this.error(['collection error event handler', evt]);
 	};
 
 	// -- end Collection Class
@@ -791,7 +822,11 @@
 		this._initialize.apply(this, this.options);
 	};
 
-	// internal init
+	/**
+	 * internal init call
+	 *
+	 * @param {Object} options - passed from constructor
+	 */
 	Model.prototype._initialize = function(options) {
 		this.log(['model init', options]);
 
@@ -808,18 +843,36 @@
 		this.on('dirty', this.onDirty);
 		this.on('change', this.onChange);
 		this.on('render', this.onRender);
+		this.on('error', this.onError);
 	};
 
-	// user init
+	/**
+	 * user overridable init
+	 *
+	 * @param {Object} options - will get options from constructor and internal init
+	 */
 	Model.prototype.initialize = function(options) {};
 
-	// mark model as clean
+	/**
+	 * mark the model as clean
+	 *
+	 * @param {Object} options
+	 * @return {Object} model for chaining
+	 */
 	Model.prototype.clean = function(opt) {
 		this.changedAttributes = {};
 		this._dirty = false;
+
+		return this;
 	};
 
-	// return single value or object of values from array of keys
+	// 
+	/**
+	 * return single value or object of values from array of keys
+	 *
+	 * @param {String, Array} key / keys
+	 * @return {Object} matching value or object with all values from array
+	 */
 	Model.prototype.get = function(key) {
 		this.log(['model get', key]);
 
@@ -845,8 +898,26 @@
 		}
 	};
 
+	/**
+	 * set the value of one mor more attributes (or internal values)
+	 * model will be marked dirty, and the changedAttributes will be set to show what changed
+	 *
+	 * @param {String, Object} single key, or an object of key/value pairs
+	 * @param {Object} value, if key is a string
+	 * @param {Bool} internal
+	 * @param {Bool} silent
+	 * @return {Object} model for chaining
+	 */
 	Model.prototype.set = function(key, value, internal, silent) {
 		this.log(['model set', key, value, internal, silent]);
+
+		if (!arguments.length) {
+			this.trigger('error', {
+				message: 'Model.set requires key/value or data object to be set'
+			});
+
+			return false;
+		}
 
 		var changedAttributes = [],
 			model = this,
@@ -869,7 +940,7 @@
 				}
 			}
 
-			// merge
+			// merge attributes
 			if (internal) {
 				model = $.extend(true, {}, model, key);
 			} else {
@@ -906,8 +977,8 @@
 	};
 
 	/**
-	 * render
 	 * render item from template, or if item is clean, just return the already rendered html
+	 *
 	 * @return {String} rendered HTML template of the model
 	 */
 	Model.prototype.render = function(options) {
@@ -936,7 +1007,6 @@
 	};
 
 	/**
-	 * getAttributes
 	 * @return {Object} returns object of all the model data attributes
 	 */
 	Model.prototype.getAttributes = function() {
@@ -946,7 +1016,7 @@
 	};
 
 	/**
-	 * parser
+	 * parser NYI
 	 * @return {Object} object of parsed data - NYI
 	 */
 	Model.prototype.parser = function(input) {
@@ -958,7 +1028,6 @@
 	};
 
 	/**
-	 * toJSON
 	 * @return {String} json string of the model
 	 */
 	Model.prototype.toJSON = function() {
@@ -987,6 +1056,14 @@
 
 		this._hasBeenRendered = false;
 	};
+
+	/**
+	 * Base onError event handler
+	 */
+	Model.prototype.onError = function(evt) {
+		this.log(['model error event handler', evt]);
+	};
+
 	// -- end Model Class
 
 
