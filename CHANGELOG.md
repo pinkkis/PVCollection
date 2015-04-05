@@ -12,6 +12,12 @@
 
 ## Implemented
 
+v0.3.6
+======
+
+* Added collection.firstSet that starts as true and is set to false during .set() or .add()
+* Fixed default sorting function
+
 v0.3.5
 ======
 

@@ -26,10 +26,11 @@
 		this.debug = opt.debug || false;
 		this.initialized = false;
 		this.created = moment();
+		this.firstSet = true;
 
 		// default sorting
 		this.sortComparator = function(a, b) {
-			return a.attributes[a._uniqueField] < b.attributes[b._uniqueField];
+			return a.attributes[a._uniqueField] < b.attributes[b._uniqueField] ? 1 : -1;
 		};
 
 		// template
@@ -316,6 +317,8 @@
 			}			
 		}
 
+		self.firstSet = false;
+
 		return this;
 	};
 
@@ -367,6 +370,8 @@
 				});
 			}
 		}
+
+		this.firstSet = false;
 
 		// return requested data
 		if (options.returnItems) {
